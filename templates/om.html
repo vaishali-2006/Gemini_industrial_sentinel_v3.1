@@ -1,0 +1,3722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENTINEL | Ultimate Defense</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        // tailwind.config = {
+        //     theme: {
+        //         extend: {
+        //             colors: { deep: '#02040a', neon: '#00f3ff', purple: '#bc13fe', danger: '#ff0f4b', success: '#00ff41', warning: '#facc15' },
+        //             fontFamily: { sans: ['Rajdhani', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'], },
+        //             dropShadow: { 'glow': '0 0 10px rgba(0, 243, 255, 0.5)', },
+        //             animation: { 
+        //                 'float': 'float 6s ease-in-out infinite', 
+        //                 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        //                 'spin-slow': 'spin 12s linear infinite',
+        //             },
+        //             keyframes: { 
+        //                 float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' }, },
+        //                 scan: { '0%': { backgroundPosition: '0% 0%' }, '100%': { backgroundPosition: '0% 100%' } }
+        //             }
+        //         }
+        //     }
+        // }
+
+
+
+
+        
+        tailwind.config = {
+    theme: {
+        extend: {
+            // Colors swapped for Industry/Institutional Elite look
+            colors: { 
+                deep: '#050505',     // Thoda aur dark matte finish
+                neon: '#facc15',     // Industrial Gold / Neon Amber
+                purple: '#f59e0b',   // Deep Orange for high-priority alerts
+                danger: '#ff0000',   // Pure Red for critical breaches
+                success: '#10b981',  // Emerald Green for stable systems
+                warning: '#fbbf24'   // Bright Yellow for scanning
+            },
+            fontFamily: { 
+                sans: ['Rajdhani', 'sans-serif'], 
+                mono: ['JetBrains Mono', 'monospace'], 
+            },
+            // Glow effect updated to match the Gold/Amber theme
+            dropShadow: { 
+                'glow': '0 0 10px rgba(250, 204, 21, 0.5)', 
+            },
+            animation: { 
+                'float': 'float 6s ease-in-out infinite', 
+                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                'spin-slow': 'spin 12s linear infinite',
+            },
+            keyframes: { 
+                float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' }, },
+                scan: { '0%': { backgroundPosition: '0% 0%' }, '100%': { backgroundPosition: '0% 100%' } }
+            }
+        }
+    }
+}
+    </script>
+    <style>
+         body { background-color:#0e4c80df; color: #08563b; overflow: hidden; }
+        
+        
+        /* LIGHTS */
+        .ambient-light { position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(140px); opacity: 0.25; animation: moveLight 12s infinite alternate ease-in-out; z-index: 0; pointer-events: none; }
+        .light-1 { top: -20%; left: -10%; background: #00f3ff; } .light-2 { bottom: -20%; right: -10%; background: #bc13fe; animation-delay: 4s; }
+        @keyframes moveLight { 0% { transform: scale(1); opacity: 0.2; } 100% { transform: scale(1.1); opacity: 0.3; } }
+
+        /* UI ELEMENTS */
+        /* .glass-sidebar { background: rgba(5, 5, 10, 0.7); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.07); border-color: rgba(0, 243, 255, 0.3); box-shadow: 0 0 30px rgba(0, 243, 255, 0.1); }
+         */
+
+           .glass-sidebar { background: rgb(46, 53, 57); backdrop-filter: blur(20px); border-right: 1px solid rgba(255, 255, 255, 0); }
+        .glass-card { background: rgba(27, 4, 4, 0.356); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); background: rgba(255, 247, 0, 0.445); border-color: rgba(0, 243, 255, 0.3); box-shadow: 0 0 30px rgba(0, 243, 255, 0.1); }
+        
+
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; } ::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
+        .fade-in-up { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        
+        .sentinel-text { text-shadow: 0 0 10px rgba(0, 243, 255, 0.3); line-height: 1.5; font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
+        .danger-text { text-shadow: 0 0 10px rgba(255, 15, 75, 0.4); font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; }
+
+        /* MODALS & MENUS */
+        .upload-menu-enter { opacity: 0; transform: translateY(10px) scale(0.95); pointer-events: none; }
+        .upload-menu-active { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+        #cameraModal, #intelModal, #deepSearchModal { backdrop-filter: blur(10px); }
+        
+        /* 3D SECURITY FACE BACKGROUND (NEW) */
+        .security-face-bg {
+            position: absolute; inset: 0;
+            background-image: url('https://img.freepik.com/premium-photo/artificial-intelligence-human-head-wireframe-display-blue-dots_34663-35.jpg'); 
+            background-size: cover; background-position: center; 
+            opacity: 0.3; mix-blend-mode: screen; pointer-events: none;
+            filter: contrast(1.2) hue-rotate(180deg); /* Adjust color to match theme */
+        }
+        .hacker-grid {
+            position: absolute; inset: 0;
+            background: linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            perspective: 1000px; transform: rotateX(20deg); opacity: 0.3; pointer-events: none;
+        }
+
+        /* HUD CORNERS */
+        .hud-corner { position: absolute; width: 40px; height: 40px; border: 4px solid #00f3ff; }
+        .tl { top: 20px; left: 20px; border-right: 0; border-bottom: 0; } .tr { top: 20px; right: 20px; border-left: 0; border-bottom: 0; }
+        .bl { bottom: 20px; left: 20px; border-right: 0; border-top: 0; } .br { bottom: 20px; right: 20px; border-left: 0; border-top: 0; }
+        .scan-line { position: absolute; width: 100%; height: 2px; background: rgba(0, 243, 255, 0.5); top: 0; animation: scanDown 3s linear infinite; }
+        @keyframes scanDown { 0% { top: 0%; } 100% { top: 100%; } }
+
+        /* KEYWORD CHIPS */
+        .keyword-chip { transition: all 0.2s ease; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; user-select: none; }
+        .keyword-chip:hover { border-color: #facc15; background: rgba(250, 204, 21, 0.15); }
+        .keyword-chip.active { background: #facc15; color: #000; border-color: #facc15; box-shadow: 0 0 20px rgba(250, 204, 21, 0.5); font-weight: bold; }
+    </style>
+</head>
+<body class="h-screen flex font-sans selection:bg-neon selection:text-black">
+
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="ambient-light light-1"></div>
+        <div class="ambient-light light-2"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+    </div>
+
+    <aside class="w-20 lg:w-80 glass-sidebar flex flex-col z-20 relative hidden md:flex border-r border-white/5">
+        <div class="p-6 flex items-center gap-4 border-b border-white/5">
+            <div class="w-10 h-10 rounded-lg bg-white/5 border border-neon/30 flex items-center justify-center shadow-[0_0_15px_rgba(0,243,255,0.2)] text-neon"><i class="fa-solid fa-shield-halved text-lg"></i></div>
+            <div class="hidden lg:block"><h1 class="text-xl font-bold tracking-[0.2em] text-white">GEMINI SENTINEL</h1><p class="text-[9px] text-neon/60 font-mono tracking-widest uppercase"> Industrial Defense Core V3.0</p></div>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="#" onclick="window.location.reload()" class="flex items-center gap-4 p-3 rounded-lg bg-neon/5 border border-neon/20 text-neon hover:bg-neon/10 group"><i class="fa-solid fa-chart-radar text-lg"></i> <span class="hidden lg:block font-medium tracking-wide">Live Dashboard</span></a>
+            
+
+
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+<button onclick="initiateNewMission()" class="holo-btn group relative w-full p-4 rounded-xl transition-all duration-500 mb-6 overflow-hidden">
+    <div class="absolute inset-0 bg-neon/5 opacity-20 group-hover:opacity-40 transition-opacity"></div>
+    
+    <div class="absolute inset-0 border-2 border-neon/30 rounded-xl group-hover:border-neon group-hover:shadow-[0_0_20px_rgba(0,243,255,0.6)] transition-all duration-500"></div>
+    
+    <div class="relative flex items-center justify-center gap-4">
+        <div class="p-2 bg-neon/10 rounded-lg group-hover:bg-neon/20 transition-colors">
+            <i class="fa-solid fa-plus text-neon group-hover:scale-125 transition-transform"></i>
+        </div>
+        <div class="flex flex-col items-start">
+            <span class="text-[9px] text-neon/60 font-mono tracking-widest leading-none mb-1">SYSTEM_RESET</span>
+            <span class="text-[13px] tracking-[0.3em] font-black text-white font-mono group-hover:text-neon transition-colors">NEW CHAT</span>
+        </div>
+    </div>
+
+    <div class="particle-overlay"></div>
+</button>
+<style>
+.holo-btn {
+    background: linear-gradient(135deg, rgba(0,243,255,0.1) 0%, rgba(0,0,0,0.4) 100%);
+    border: 1px solid rgba(0,243,255,0.2);
+    box-shadow: 0 0 15px rgba(0,243,255,0.1);
+    animation: breathing-glow 3s infinite ease-in-out;
+}
+
+@keyframes breathing-glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(0,243,255,0.1); }
+    50% { box-shadow: 0 0 25px rgba(0,243,255,0.3); }
+}
+
+.particle-overlay {
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent, rgba(0,243,255,0.2), transparent);
+    transition: 0.5s;
+}
+
+.holo-btn:hover .particle-overlay {
+    top: 100%;
+    transition: 0.8s;
+}
+</style>
+
+<script>function initiateNewMission() {
+    // 1. Voice Confirmation
+    if (window.speechSynthesis) {
+        const msg = new SpeechSynthesisUtterance("Hii user welcome to your new mission of security");
+        msg.pitch = 0.8; // Deep robotic voice
+        msg.rate = 1.1;
+        window.speechSynthesis.speak(msg);
+    }
+
+    // 2. Clear Screen
+    const chatLogs = document.getElementById('logs');
+    chatLogs.innerHTML = "";
+    
+    // 3. Reset UI
+    const welcome = document.getElementById('welcomeScreen');
+    if (welcome) {
+        welcome.classList.remove('hidden');
+        welcome.style.opacity = '1';
+    }
+    
+    // 4. Input Reset
+    document.getElementById('userInput').value = "";
+    console.log("🛰️ Mission Cleared. Sentinel Standby.");
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<button onclick="triggerAccessRoom()" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-600/20 to-blue-600/20 border border-cyan-500/50 rounded-lg text-cyan-400 text-[11px] font-bold tracking-widest hover:shadow-[0_0_15px_rgba(0,243,255,0.3)] hover:scale-105 transition-all">
+    <i class="fa-solid fa-microchip animate-spin-slow"></i> 
+    ENTER_ACTION_ROOM_v2.0
+</button>
+
+
+
+
+<button onclick="toggleHistory()" class="group relative flex items-center gap-3 w-full py-2 px-4 rounded-xl transition-all duration-500 bg-white/5 border border-white/10 hover:border-neon/50 mt-4 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-neon/10 to-transparent -translate-x-full group-hover:animate-scan-fast"></div>
+    
+  
+
+    <div class="relative z-10 flex items-center gap-3">
+        <i class="fa-solid fa-clock-rotate-left text-gray-400 group-hover:text-neon group-hover:rotate-[-360deg] transition-all duration-700"></i>
+        <span class="text-[13px] tracking-[0.2em] font-mono font-bold text-blue-400 group-hover:text-white transition-colors">CHAT HISTORY</span>
+        
+
+    </div>
+
+    <div class="absolute right-4 w-1 h-1 bg-neon/20 rounded-full group-hover:bg-neon group-hover:shadow-[0_0_8px_#00f3ff]"></div>
+</button>
+
+<div id="historyPanel" class="fixed left-[-300px] top-0 h-full w-[300px] bg-deep/95 backdrop-blur-2xl border-r border-neon/30 z-[100] transition-all duration-500 p-6 overflow-y-auto sentinel-grid">
+    <div class="flex justify-between items-center mb-8 border-b border-white/5 pb-4">
+        <h3 class="text-neon font-mono text-[10px] tracking-[0.3em] uppercase">[Chat History]</h3>
+        <button onclick="toggleHistory()" class="text-gray-500 hover:text-neon hover:rotate-90 transition-all"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="historyList" class="space-y-4">
+        </div>
+</div>
+
+
+<style>/* Scan Line Animation */
+@keyframes scan-fast {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.group-hover\:animate-scan-fast {
+    animation: scan-fast 1.5s infinite linear;
+}
+
+/* History Panel Tactical Grid */
+.sentinel-grid {
+    background-image: 
+        linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+    background-size: 25px 25px;
+}
+
+/* History Card Styling (Inside List) */
+#historyList > div {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    border-left: 2px solid transparent !important;
+    transition: all 0.3s ease !important;
+}
+
+#historyList > div:hover {
+    background: rgba(0, 243, 255, 0.08) !important;
+    border-left: 2px solid #00f3ff !important;
+    transform: translateX(8px);
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="main-dashboard"></div>
+
+
+
+<div class="px-4 mt-6">
+    <button onclick="openTacticalModal()" class="w-full relative group p-[2px] rounded-xl overflow-hidden bg-white/5 transition-all hover:shadow-[0_0_20px_rgba(0,243,255,0.2)]">
+        <div class="absolute inset-0 bg-gradient-to-r from-neon via-purple-500 to-neon animate-scan-slow opacity-30 group-hover:opacity-100"></div>
+        
+        <div class="relative bg-black rounded-xl p-4 flex items-center justify-between">
+            <span class="text-[15px] font-black text-white tracking-[0.3em] uppercase opacity-70 group-hover:text-neon">Operations</span>
+            <div class="w-2 h-2 rounded-full bg-neon shadow-[0_0_10px_#00f3ff]"></div>
+        </div>
+    </button>
+</div>
+
+
+
+
+<div id="tacticalModal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeTacticalModal()"></div>
+    
+    <div class="mini-console relative w-full max-w-2xl rounded-[2rem] p-8 animate-in zoom-in duration-300">
+        
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-4 bg-neon rounded-full"></div>
+                <h2 class="text-[15px] font-mono text-white/60 tracking-[0.4em] uppercase">Detect System</h2>
+            </div>
+            <button onclick="closeTacticalModal()" class="text-white/30 hover:text-danger transition-white-colors">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+    
+<style>
+    /* 1. Scrolling Container */
+    .button-hub {
+        max-height: 450px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+    .button-hub::-webkit-scrollbar { width: 5px; }
+    .button-hub::-webkit-scrollbar-thumb { 
+        background: linear-gradient(#00f3ff, #bf00ff); 
+        border-radius: 10px; 
+    }
+
+    /* 2. Ultra Attractive Tactical Box */
+    .tactical-box {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 15px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Light Shadow & Glow Effect */
+    .tactical-box:hover {
+        transform: scale(1.05) translateX(15px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(0, 243, 255, 0.6);
+        box-shadow: 0 0 40px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.1);
+    }
+
+    /* Animated Shine Line */
+    .tactical-box::after {
+        content: "";
+        position: absolute;
+        top: -50%; left: -60%;
+        width: 20%; height: 200%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: rotate(30deg);
+        transition: 0.8s;
+    }
+    .tactical-box:hover::after { left: 120%; }
+
+    .icon-container {
+        width: 60px; height: 60px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 18px;
+        background: rgba(0, 0, 0, 0.5);
+        margin-right: 1.5rem;
+        transition: 0.3s;
+    }
+
+    .glow-cyan { text-shadow: 0 0 20px #00f3ff; color: #00f3ff; font-size: 24px; }
+    .glow-purple { text-shadow: 0 0 20px #bf00ff; color: #bf00ff; font-size: 24px; }
+    .glow-yellow { text-shadow: 0 0 20px #ffcc00; color: #ffcc00; font-size: 24px; }
+</style>
+
+<div class="button-hub max-w-md p-4">
+
+  <a href="/threat-detect" target="_blank" onclick="speakAction('Initiating Global Threat Detection')" style="text-decoration: none;">
+    <div class="tactical-box rounded-[2rem] p-6 group">
+        <div class="icon-container border border-cyan-500/40 group-hover:bg-cyan-500/10">
+            <i class="fa-solid fa-earth-asia glow-cyan"></i>
+        </div>
+        <div class="text-left">
+            <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">Threat Detection</span>
+            <span class="block text-[9px] text-cyan-400 font-mono italic tracking-widest mt-1">UPLINK ACTIVE</span>
+        </div>
+    </div>
+</a>
+
+
+    <a href="#" onclick="speakAction('Running Deep Neural AI Audit')" style="text-decoration: none;">
+        <div class="tactical-box rounded-[2rem] p-6 group">
+            <div class="icon-container border border-purple-500/40 group-hover:bg-purple-500/10">
+                <i class="fa-solid fa-brain glow-purple"></i>
+            </div>
+            <div class="text-left">
+                <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">AI Audit</span>
+                <span class="block text-[9px] text-purple-400 font-mono italic tracking-widest mt-1">NEURAL SCANNING...</span>
+            </div>
+        </div>
+    </a>
+
+    <a href="#" onclick="speakAction('Activating Layer 4 Shield Protection')" style="text-decoration: none;">
+        <div class="tactical-box rounded-[2rem] p-6 group">
+            <div class="icon-container border border-yellow-500/40 group-hover:bg-yellow-500/10">
+                <i class="fa-solid fa-shield-halved glow-yellow"></i>
+            </div>
+            <div class="text-left">
+                <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">Shield</span>
+                <span class="block text-[9px] text-yellow-400 font-mono italic tracking-widest mt-1">L4 DEFENSE ENABLED</span>
+            </div>
+        </div>
+    </a>
+
+
+
+
+
+    
+  <a href="#" onclick="speakAction('Purging Infected Nodes')" style="text-decoration: none;">
+    <div class="tactical-box rounded-[2rem] p-6 group">
+        <div class="icon-container group-hover:border-red-400 group-hover:scale-110">
+            <i class="fa-solid fa-biohazard glow-red"></i>
+        </div>
+        <div class="text-left">
+            <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">System Purge</span>
+            <span class="block text-[9px] text-red-400 font-mono italic mt-1">THREAT ELIMINATION</span>
+        </div>
+    </div>
+</a>
+
+
+
+
+
+<a href="#" onclick="speakAction('Accessing Neural Core')" style="text-decoration: none;">
+    <div class="tactical-box rounded-[2rem] p-6 group">
+        <div class="icon-container group-hover:border-purple-400 group-hover:scale-110">
+            <i class="fa-solid fa-microchip glow-purple"></i>
+        </div>
+        <div class="text-left">
+            <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">Neural Core</span>
+            <span class="block text-[9px] text-purple-400 font-mono italic mt-1">LOGIC SYNCED</span>
+        </div>
+    </div>
+</a>
+
+
+
+
+
+
+<a href="threatdetect/threat detect sys.html" target="_blank" onclick="speakAction('Scanning Perimeter')" style="text-decoration: none;">
+    <div class="tactical-box rounded-[2rem] p-6 group">
+        <div class="icon-container group-hover:border-cyan-400 group-hover:scale-110">
+            <i class="fa-solid fa-satellite-dish glow-cyan"></i>
+        </div>
+        <div class="text-left">
+            <span class="block text-[13px] font-black text-white tracking-[0.2em] uppercase">Tactical Radar</span>
+            <span class="block text-[9px] text-cyan-400 font-mono italic mt-1">SCANNING...</span>
+        </div>
+    </div>
+</a>
+</div>
+
+<script>
+    function speakAction(text) {
+        const speech = new SpeechSynthesisUtterance();
+        speech.text = text;
+        speech.volume = 1.5;
+        speech.rate = 1.0;
+        speech.pitch = 0.8; // Lower pitch for a cooler AI male voice
+
+        // Picking a good voice if available
+        const voices = window.speechSynthesis.getVoices();
+        speech.voice = voices.find(v => v.name.includes('Google UK English Male')) || voices[0];
+        
+        window.speechSynthesis.speak(speech);
+    }
+</script>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+            <div class="hidden lg:block mt-8 p-4 rounded-xl bg-black/60 border border-white/5 shadow-inner">
+                <div class="flex justify-between items-center mb-2"><span class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">NETWORK</span><span class="flex h-2 w-2 relative"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span></span></div>
+                <div class="relative w-full h-24 bg-[#050505] rounded-lg border border-white/5 overflow-hidden mb-2"><canvas id="networkCanvas" class="w-full h-full"></canvas><div class="absolute inset-0 bg-[linear-gradient(rgba(0,255,65,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(0,255,65,0.05)_1px,transparent_1px)] bg-[size:10px_10px]"></div></div>
+                 <div class="flex justify-between items-center text-[9px] font-mono border-t border-white/5 pt-2">
+                    <div class="flex flex-col"><span class="text-gray-500">DOWNLOAD</span><span class="text-neon font-bold text-xs" id="net-in">0.00 MB/s</span></div>
+                    <div class="flex flex-col text-right"><span class="text-gray-500">UPLOAD</span><span class="text-purple font-bold text-xs" id="net-out">0.00 MB/s</span></div>
+                </div>
+            </div>
+            
+            <div class="mt-8 pt-4 border-t border-white/5 hidden lg:block">
+                <div class="flex items-center justify-between px-2"><div class="flex items-center gap-2"><i class="fa-solid fa-robot text-gray-400 text-xs"></i><span class="text-xs text-gray-400 font-mono">AI VOICE</span></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="voiceToggle" class="sr-only peer" checked><div class="w-8 h-4 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-neon"></div></label></div>
+            </div>
+        </nav>
+    </aside>
+
+
+
+
+
+
+
+    <main class="flex-1 flex flex-col relative z-10">
+        <header class="h-16 flex items-center justify-between px-8 border-b border-white/5 bg-deep/50 backdrop-blur-sm z-30">
+            <div class="flex items-center gap-3"><div class="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span><span class="text-[10px] font-mono text-green-400 tracking-widest font-bold">SYSTEM ONLINE</span></div></div>
+            <div class="font-mono text-[10px] text-gray-500 tracking-widest"><span class="text-neon">SECURE::</span><span class="text-white">NODE_889</span></div>
+
+            <button onclick="window.location.href='index.html'" style="background: transparent; color: #00d4ff; border: 1px solid #00d4ff; padding: 8px 15px; border-radius: 4px; cursor: pointer;">
+    ⬅️ Global Oversight
+</button>
+        </header>
+
+        <div id="main-scroll" class="flex-1 p-6 md:p-12 overflow-y-auto scroll-smooth flex flex-col items-center">
+            <div class="w-full max-w-5xl pb-40"> 
+                <div id="welcome-screen" class="w-full flex flex-col justify-center min-h-[60vh] transition-all duration-500">
+                    <div class="text-center mb-16 animate-float">
+                        <h1 class="text-5xl md:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-white via-neon to-purple drop-shadow-glow mb-4 tracking-tight">Gemini Sentinel</h1>
+                        <p class="text-gray-400 font-mono tracking-[0.3em] text-xs uppercase">Advanced Neural Defense Network</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 px-4">
+                      <div onclick="fillInput('ACADEMY SHIELD')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden"><div class="text-neon text-2xl mb-3"><i class="fa-solid fa-radar"></i></div><h3 class="text-white font-bold tracking-wider text-sm">ACADEMY SHIELD</h3><p class="text-[10px] text-gray-500 font-mono">Secure School/Cllg data</p></div>
+                        <div onclick="fillInput('HEALTH VAULT')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden"><div class="text-purple text-2xl mb-3"><i class="fa-solid fa-network-wired"></i></div><h3 class="text-white font-bold tracking-wider text-sm">HEALTH VAULT</h3><p class="text-[10px] text-gray-500 font-mono">Patient privacy lock</p></div>
+                        <div onclick="fillInput('Patient privacy lock')" class="glass-card rounded-xl p-5 cursor-pointer group relative overflow-hidden"><div class="text-green-400 text-2xl mb-3"><i class="fa-solid fa-file-shield"></i></div><h3 class="text-white font-bold tracking-wider text-sm">Patient privacy lock</h3><p class="text-[10px] text-gray-500 font-mono">Zero Trust Cloud Ops.</p></div>
+                        
+                       <div onclick="fillInput('Task Protection System (INITIATE_HANDSHAKE)')" class="glass-card rounded-xl p-5 cursor-pointer group hover:border-danger/50 relative overflow-hidden"><div class="text-danger text-2xl mb-3"><i class="fa-solid fa-ban"></i></div><h3 class="text-white font-bold tracking-wider text-sm">Task Protection Gatway</h3><p class="text-[10px] text-gray-500 font-mono">Your Platform Protection zone</p></div>
+                                 <div onclick="fillInput('CIVIC DEFENSE')" class="glass-card rounded-xl p-5 cursor-pointer group hover:border-danger/50 relative overflow-hidden"><div class="text-danger text-2xl mb-3"><i class="fa-solid fa-ban"></i></div><h3 class="text-white font-bold tracking-wider text-sm">CIVIC DEFENSE</h3><p class="text-[10px] text-gray-500 font-mono">Institutional Stability</p></div>
+                    </div>
+                </div>
+                <div id="logs" class="flex flex-col gap-6 w-full hidden"></div>
+            </div>
+        </div>
+
+        <div id="previewContainer" class="absolute bottom-24 left-0 w-full flex justify-center z-40 pointer-events-none transition-all duration-300 opacity-0 transform translate-y-10">
+            <div class="bg-black/80 border border-neon/50 p-2 rounded-xl backdrop-blur-md flex items-center gap-3 shadow-[0_0_20px_rgba(0,243,255,0.3)] pointer-events-auto">
+                <img id="previewImage" src="" class="h-16 w-16 object-cover rounded-lg border border-white/20 hidden">
+                <div id="filePreview" class="h-16 w-16 bg-white/10 rounded-lg flex items-center justify-center border border-white/20 hidden"><i class="fa-solid fa-file-code text-neon text-2xl"></i></div>
+                <div class="flex flex-col pr-4"><span class="text-xs text-neon font-mono font-bold">READY FOR UPLOAD</span><span id="fileName" class="text-[10px] text-gray-400 font-mono truncate max-w-[150px]">filename.jpg</span></div>
+                <button onclick="clearAttachment()" class="text-gray-500 hover:text-danger transition"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+<div id="uploadMenu" class="absolute bottom-24 left-10 md:left-[26%] z-[100] bg-[#0a0a10]/95 border border-white/10 p-2 rounded-xl shadow-[0_0_30px_rgba(0,0,0,0.8)] backdrop-blur-xl flex flex-col gap-1 w-48 hidden opacity-0 transition-all duration-300 transform translate-y-2">
+    
+    <div class="flex justify-between items-center px-2 py-1 border-b border-white/5 mb-2">
+        <span class="text-[9px] text-gray-500 font-mono uppercase tracking-widest">Select Protocol</span>
+        <button onclick="toggleUploadMenu()" class="text-gray-500 hover:text-danger transition-colors p-1">
+            <i class="fa-solid fa-xmark text-xs"></i>
+        </button>
+    </div>
+
+
+
+
+
+    <button onclick="triggerUpload('image')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-neon/10 hover:text-neon text-gray-300 transition group text-left">
+        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center group-hover:border group-hover:border-neon/30"><i class="fa-solid fa-image"></i></div>
+        <div class="flex flex-col"><span class="text-xs font-bold">Visual Data</span><span class="text-[9px] text-gray-500">.jpg, .png</span></div>
+    </button>
+    
+    <button onclick="triggerUpload('file')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-green-500/10 hover:text-green-400 text-gray-300 transition group text-left">
+        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center group-hover:border group-hover:border-green-500/30"><i class="fa-solid fa-file-code"></i></div>
+        <div class="flex flex-col"><span class="text-xs font-bold">System File</span><span class="text-[9px] text-gray-500">.txt, .json</span></div>
+    </button>
+    
+    <button onclick="triggerUpload('audio')" class="flex items-center gap-3 p-2 rounded-lg hover:bg-purple/10 hover:text-purple text-gray-300 transition group text-left">
+        <div class="w-8 h-8 rounded bg-white/5 flex items-center justify-center group-hover:border group-hover:border-purple/30"><i class="fa-solid fa-music"></i></div>
+        <div class="flex flex-col"><span class="text-xs font-bold">Audio Stream</span><span class="text-[9px] text-gray-500">.mp3, .wav</span></div>
+    </button>
+</div>
+
+
+
+
+
+
+
+
+
+        <div class="absolute bottom-0 left-0 w-full p-6 md:p-8 bg-gradient-to-t from-deep via-deep to-transparent z-40">
+            <div class="max-w-4xl mx-auto relative group">
+                <div id="activeTags" class="absolute -top-10 left-0 flex gap-2 overflow-x-auto w-full px-2 no-scrollbar pointer-events-none"></div>
+
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-neon via-purple-500 to-neon rounded-2xl opacity-20 blur group-hover:opacity-50 transition duration-500"></div>
+                <div class="relative flex items-center bg-[#0a0a10] rounded-2xl border border-white/10 p-2 shadow-2xl backdrop-blur-xl gap-2">
+                    <div class="flex items-center gap-1 pl-2 border-r border-white/10 pr-2">
+                        <input type="file" id="fileInput" class="hidden" onchange="handleFileSelect(this)">
+                        <button onclick="toggleUploadMenu()" class="p-2 rounded-lg hover:bg-white/10 text-neon transition tooltip" title="Upload"><i class="fa-solid fa-paperclip"></i></button>
+                        
+                        <button id="micBtn" onclick="startListening()" class="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-neon transition relative tooltip" title="Voice Command">
+                            <i class="fa-solid fa-microphone text-sm"></i>
+                            <span id="micGlow" class="hidden absolute inset-1 rounded-lg bg-neon/20 animate-ping"></span>
+                        </button>
+                        
+                        <button onclick="openDeepSearch()" class="p-2 rounded-lg hover:bg-white/10 text-warning transition tooltip animate-pulse-slow" title="Neural Interface"><i class="fa-solid fa-brain"></i></button>
+                        <button onclick="openCamera()" class="p-2 rounded-lg hover:bg-white/10 text-purple transition tooltip" title="Camera"><i class="fa-solid fa-camera"></i></button>
+                    </div>
+                    <div class="pl-2 text-neon animate-pulse"><i class="fa-solid fa-terminal"></i></div>
+                    
+                    <input type="text" id="userInput" 
+                           onkeydown="if(event.key === 'Enter') runScan()"
+                           placeholder="Enter tactical command..." 
+                           class="flex-1 bg-transparent text-white font-mono text-sm px-2 py-3 focus:outline-none placeholder-gray-600" 
+                           autocomplete="off">
+                    
+                    <button onclick="runScan()" class="bg-white/5 hover:bg-neon hover:text-black text-neon border border-neon/30 px-6 py-2 rounded-xl transition-all duration-300 font-bold tracking-wider text-sm shadow-[0_0_10px_rgba(0,243,255,0.1)] hover:shadow-[0_0_20px_rgba(0,243,255,0.6)]">EXECUTE</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+
+
+
+
+
+    
+<div class="neural-container">
+    <button class="master-btn" id="mainAIButton" onclick="toggleAISelection(event)">
+        <span id="current-mode-text">AI CORE</span>
+        <div id="particle-container" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none;"></div>
+    </button>
+
+   <div id="ai-options" class="options-panel">
+    <button onclick="selectAI('sigma')" class="sub-btn">
+        SENTINEL SIGMA
+        <div class="tagline1">LEAD CORE: SOCIOLOGY & VISION</div>
+    </button>
+
+    <button onclick="selectAI('alpha')" class="sub-btn">
+        SENTINEL ALPHA
+        <div class="tagline2">COMMAND CORE: EXECUTION & DEFENSE</div>
+    </button>
+
+    <button onclick="selectAI('omega')" class="sub-btn">
+        SENTINEL OMEGA
+        <div class="tagline3">AUDIT CORE: FORENSICS & ANALYSIS</div>
+    </button>
+     <button onclick="selectAI('prime')" class="sub-btn">
+        SENTINEL Prime
+        <div class="tagline4">UNIFIED DICISION ENGINE </div>
+    </button>
+</div>
+</div>
+
+
+<div id="briefing-popup" class="briefing-overlay">
+    <div class="briefing-content">
+        <h2 id="briefing-title">INITIATING LINK...</h2>
+        <div class="briefing-bar"></div>
+        <p id="briefing-task">Accessing neural modules...</p>
+        <div class="briefing-status">STATUS: <span id="briefing-status-text">DECODING</span></div>
+    </div>
+</div>
+
+
+
+
+<style>
+.tagline1 {
+    font-size: 8px; /* Sabse chhoti size */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7; /* Thoda halka dikhega taaki main name highlight ho */
+    display: block;
+    color:#00f2ff;
+    margin-top: 2px;
+    font-family: 'Courier New', monospace;
+}
+.tagline2 {
+    font-size: 8px; /* Sabse chhoti size */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7; /* Thoda halka dikhega taaki main name highlight ho */
+    display: block;
+    color:#c8ff00;
+    margin-top: 2px;
+    font-family: 'Courier New', monospace;
+}
+.tagline3 {
+    font-size: 8px; /* Sabse chhoti size */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7; /* Thoda halka dikhega taaki main name highlight ho */
+    display: block;
+    color:#00ff73;
+    margin-top: 2px;
+    font-family: 'Courier New', monospace;
+}
+.tagline4 {
+    font-size: 8px; /* Sabse chhoti size */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.7; /* Thoda halka dikhega taaki main name highlight ho */
+    display: block;
+    color:#8f9fff;
+    margin-top: 2px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Hover par tagline thodi bright ho jaye */
+.sub-btn:hover .tagline1 {
+    opacity: 1;
+    color: #ff0000;
+}
+.sub-btn:hover .tagline2 {
+    opacity: 1;
+    color: #f32f2f;
+}
+.sub-btn:hover .tagline3 {
+    opacity: 1;
+    color: #e60505;
+}
+.sub-btn:hover .tagline4 {
+    opacity: 1;
+    color: #ff0000;
+}
+
+
+.briefing-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+    justify-content: center; align-items: center;
+}
+
+.briefing-content {
+    background: #000;
+    border: 2px solid var(--neon-blue);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 30px var(--neon-blue);
+    font-family: 'Courier New', monospace;
+    max-width: 400px;
+}
+
+#briefing-title { color: var(--neon-blue); text-transform: uppercase; margin-bottom: 10px; }
+.briefing-bar { height: 4px; background: var(--neon-blue); width: 0%; animation: loadBar 2s forwards; margin-bottom: 15px; }
+#briefing-task { color: #fff; font-size: 14px; line-height: 1.6; }
+.briefing-status { margin-top: 15px; font-size: 12px; color: var(--neon-green); font-weight: bold; }
+
+@keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+
+
+
+
+:root {
+    --neon-blue: #00ffff;
+    --neon-green: #39ff14;
+}
+
+.neural-container {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+    
+    z-index: 100;
+}
+
+/* Master Button Design */
+.master-btn {
+    background: #000;
+    color: var(--neon-blue);
+    border: 1.5px solid var(--neon-blue);
+    padding: 9px 20px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--neon-blue);
+    transition: 0.3s;
+    border-radius: 5px;
+    position: relative;
+    overflow: visible; /* Particles spread hone ke liye */
+}
+
+/* 🚨 Calling Light Animation */
+@keyframes calling-pulse {
+    0% { box-shadow: 0 0 5px var(--neon-blue); border-color: var(--neon-blue); }
+    50% { box-shadow: 0 0 30px 10px var(--neon-blue); border-color: #fff; background: rgba(0, 255, 255, 0.2); }
+    100% { box-shadow: 0 0 5px var(--neon-blue); border-color: var(--neon-blue); }
+}
+
+.calling-active {
+    animation: calling-pulse 0.6s infinite !important;
+    transform: scale(1.05);
+}
+
+/* 🎇 SUNDAR GREEN NEON PARTICLES */
+.particle {
+    position: absolute;
+    background: var(--neon-green);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: -1;
+    box-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+    animation: moveParticle 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes moveParticle {
+    0% { transform: translate(0, 0) scale(1.5); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
+}
+
+.options-panel {
+    display: none; 
+    flex-direction: column;
+    gap: 8px;
+    position: absolute;
+    top: 55px;
+    left: 50;
+    background: rgba(0, 0, 0, 0.95);
+    padding: 10px;
+    border: 1px solid var(--neon-blue);
+    box-shadow: 0 0 20px var(--neon-blue);
+    z-index: 1000;
+}
+
+.sub-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+  text-align:left;
+   
+    transition: 0.3s;
+}
+
+.sub-btn:hover {
+    background: var(--neon-blue);
+    color: black;
+    border-color: var(--neon-blue);
+}
+</style>
+
+<script>
+
+
+
+
+// 🎙️ Initialize Speech Recognition Globally
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const recognition = SpeechRecognition ? new SpeechRecognition() : null;
+
+if (recognition) {
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+let idleTimer;
+let pInterval;
+const IDLE_TIME_LIMIT = 50* 60 * 1000; // 1 Minute
+let isPrompting = false;
+
+// --- ✨ GREEN NEON PARTICLE ENGINE ---
+function createGreenParticles() {
+    const container = document.getElementById('particle-container');
+    if(!container) return;
+
+    for(let i=0; i < 6; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        
+        const x = (Math.random() - 0.5) * 160;
+        const y = (Math.random() - 0.5) * 160;
+        
+        p.style.setProperty('--x', `${x}px`);
+        p.style.setProperty('--y', `${y}px`);
+        p.style.left = '50%';
+        p.style.top = '50%';
+        
+        const size = Math.random() * 4 + 2;
+        p.style.width = p.style.height = `${size}px`;
+        
+        container.appendChild(p);
+        setTimeout(() => p.remove(), 1200);
+    }
+}
+
+// --- 🎙️ SYNCED TRIGGER ---
+function triggerAIPrompt() {
+    if (isPrompting) return;
+    isPrompting = true;
+    
+    const masterBtn = document.getElementById('mainAIButton');
+    const promptMessage = "Hello, hello! Hey There, I am waiting for you. Let's talk with us. Me and my friend cyber expert want to talk to you. Wants something new in threat detection system security? I will tell this to you!";
+    
+    const speech = new SpeechSynthesisUtterance(promptMessage);
+    
+    speech.onstart = () => {
+        masterBtn.classList.add('calling-active'); // Light Flash Start
+        pInterval = setInterval(createGreenParticles, 120); // Green Particles Start
+    };
+
+    speech.onend = () => {
+        masterBtn.classList.remove('calling-active'); // Light Stop
+        clearInterval(pInterval); // Particles Stop
+        isPrompting = false; // Reset prompting state
+    };
+
+    window.speechSynthesis.speak(speech);
+}
+
+// --- Menu Controls ---
+function toggleAISelection(event) {
+    if (event) event.stopPropagation();
+    const panel = document.getElementById('ai-options');
+    panel.style.display = (panel.style.display === "flex") ? "none" : "flex";
+    resetIdleTimer();
+}
+
+function selectAI(choice) {
+    const text = document.getElementById('current-mode-text');
+    const master = document.getElementById('mainAIButton');
+    const panel = document.getElementById('ai-options');
+    const popup = document.getElementById('briefing-popup');
+    const bTitle = document.getElementById('briefing-title');
+    const bTask = document.getElementById('briefing-task');
+
+    // 1. Setup Briefing Content based on Choice
+    if (choice === 'sigma') {
+        bTitle.innerText = "Sentinel Sigma (Lead)";
+        bTask.innerText = "MISSION: Leading system operations. Executing sociology modules and human behavior pattern analysis.";
+        master.style.borderColor = "#00ffff";
+        if(typeof speakAction === "function") speakAction("Sentinel Sigma is now leading. Analyzing social patterns.");
+    } else if (choice === 'alpha') {
+        bTitle.innerText = "Sentinel Alpha (Executor)";
+        bTask.innerText = "MISSION: System Command and Control. Neutralizing active threats and managing firewall protocols.";
+        master.style.borderColor = "#00ffff";
+        if(typeof speakAction === "function") speakAction("Sentinel Alpha online. Command core engaged.");
+    } else if (choice === 'omega') {
+        bTitle.innerText = "Sentinel Omega (Auditor)";
+        bTask.innerText = "MISSION: Forensic Audit. Scanning vulnerabilities and generating deep security intelligence reports.";
+        master.style.borderColor = "#39ff14";
+        if(typeof speakAction === "function") speakAction("Sentinel Omega active. Deep audit initiated.");
+    }
+    else if (choice === 'prime') {
+        bTitle.innerText = "Sentinel Prime (META-INTELLIGENCE)";
+        bTask.innerText = "MISSION: Sentinel Meta-System operational. All three cores—Sigma, Alpha, and Omega—are now unified. Total system control established. Ready for autonomous defense";
+        master.style.borderColor = "#39ff14";
+        if(typeof speakAction === "function") speakAction("iniating Multi-Agent Orchestration System");
+    }
+
+    // 2. Show Popup and Redirect
+    popup.style.display = "flex";
+    panel.style.display = "none";
+
+    setTimeout(() => {
+        let page = (choice === 'sigma') ? "4.1fabc.html" : (choice === 'alpha') ? "alpha.html" :  (choice === 'omega') ? "omega.html" :"122.1g.html";
+        window.location.href = page;
+    }, 2500); // 2.5s popup duration
+}
+
+// --- Activity Monitor ---
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    const masterBtn = document.getElementById('mainAIButton');
+    if (masterBtn && !isPrompting) masterBtn.classList.remove('calling-active');
+    
+    idleTimer = setTimeout(triggerAIPrompt, IDLE_TIME_LIMIT);
+}
+
+document.addEventListener('mousemove', resetIdleTimer);
+document.addEventListener('mousedown', resetIdleTimer);
+document.addEventListener('keypress', resetIdleTimer);
+window.onload = resetIdleTimer;
+</script>
+
+
+
+
+
+
+
+
+
+
+
+    <div id="deepSearchModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/95 p-4">
+        <div class="security-face-bg"></div>
+        <div class="hacker-grid"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
+
+        <div class="bg-black/60 border border-warning/30 w-full max-w-4xl rounded-2xl p-8 shadow-[0_0_80px_rgba(250,204,21,0.15)] relative overflow-hidden backdrop-blur-xl z-10">
+            <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 bg-warning/10 border border-warning/50 rounded-xl flex items-center justify-center text-warning text-3xl shadow-[0_0_20px_rgba(250,204,21,0.3)] animate-pulse-slow"><i class="fa-solid fa-brain"></i></div>
+                    <div><h2 class="text-3xl text-white font-bold tracking-[0.15em] drop-shadow-md">NEURAL INTERFACE</h2><p class="text-xs text-warning font-mono uppercase tracking-widest mt-1">Select Search Parameters // Level 5 Clearance</p></div>
+                </div>
+                <button onclick="closeDeepSearch()" class="text-gray-500 hover:text-white transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Heuristic Analysis</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Deep Packet Insp.</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Rootkit Trace</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Decryption 256</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">SQL Injection</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">XSS Vectors</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Brute Force Sim</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Zero-Day Vuln</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Metadata Extract</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">IP Geolocation</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Port Scanning</div>
+                <div class="keyword-chip bg-black/40 text-gray-300 p-4 rounded-xl text-center text-xs font-mono border border-white/10 backdrop-blur-sm" onclick="toggleKeyword(this)">Dark Web Intel</div>
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <div class="flex justify-end gap-4 border-t border-white/10 pt-6">
+                <button onclick="closeDeepSearch()" class="px-8 py-3 rounded-xl border border-white/10 text-gray-400 hover:text-white font-mono text-sm transition bg-black/50">ABORT</button>
+                <button onclick="applyDeepSearch()" class="px-10 py-3 rounded-xl bg-warning hover:bg-yellow-400 text-black font-bold tracking-widest shadow-[0_0_20px_rgba(250,204,21,0.5)] transition flex items-center gap-2 transform hover:scale-105"><i class="fa-solid fa-satellite-dish"></i> ACCESS</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cameraModal" class="fixed inset-0 z-50 hidden flex flex-col items-center justify-center bg-black/90">
+        <div class="relative w-full max-w-3xl aspect-video bg-black border border-gray-800 rounded-lg overflow-hidden shadow-[0_0_50px_rgba(0,243,255,0.2)]">
+            <video id="cameraFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+            <canvas id="cameraCanvas" class="hidden"></canvas>
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div><div class="scan-line"></div>
+                <div class="absolute top-4 left-4 text-neon font-mono text-xs animate-pulse">● LIVE FEED // REC</div>
+            </div>
+            <div class="absolute bottom-6 left-0 w-full flex justify-center gap-8 pointer-events-auto">
+                <button onclick="closeCamera()" class="px-6 py-2 rounded-full border border-danger/50 text-danger hover:bg-danger hover:text-white font-mono text-sm transition">ABORT</button>
+                <button onclick="capturePhoto()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center hover:bg-white/20 transition group"><div class="w-12 h-12 bg-white rounded-full group-hover:scale-90 transition"></div></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="intelModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80">
+        <div class="bg-[#0a0a10] border border-neon/30 w-full max-w-2xl rounded-2xl p-6 shadow-[0_0_50px_rgba(0,243,255,0.1)] relative">
+            <button onclick="closeIntel()" class="absolute top-4 right-4 text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="flex items-center gap-3 mb-6 border-b border-white/10 pb-4"><div class="w-10 h-10 rounded bg-neon/10 flex items-center justify-center text-neon border border-neon/30"><i class="fa-solid fa-microscope text-xl"></i></div><div><h2 class="text-xl text-white font-bold tracking-wider">TACTICAL ANALYSIS</h2><p class="text-xs text-gray-500 font-mono">SENTINEL INTELLIGENCE LAYER</p></div></div>
+            <div class="grid grid-cols-2 gap-4 mb-6"><div class="bg-white/5 p-4 rounded-xl border border-white/5"><div class="text-[10px] text-gray-400 font-mono uppercase">Confidence</div><div class="text-3xl text-green-400 font-bold mt-1">98.4%</div><div class="w-full bg-gray-800 h-1 mt-2 rounded-full"><div class="bg-green-400 h-full w-[98%]"></div></div></div><div class="bg-white/5 p-4 rounded-xl border border-white/5"><div class="text-[10px] text-gray-400 font-mono uppercase">Threat Level</div><div class="text-3xl text-neon font-bold mt-1">LOW</div><div class="w-full bg-gray-800 h-1 mt-2 rounded-full"><div class="bg-neon h-full w-[20%]"></div></div></div></div>
+            <div class="mb-2"><span class="text-xs text-gray-400 font-mono uppercase">DETECTED KEYWORDS</span></div><div id="intelKeywords" class="flex flex-wrap gap-2 mb-6"></div>
+            <div class="p-4 bg-purple/10 border border-purple/20 rounded-xl"><div class="text-xs text-purple font-bold mb-1"><i class="fa-solid fa-lightbulb"></i> AI INSIGHT</div><p class="text-sm text-gray-300 leading-relaxed">Analysis complete. No critical vulnerabilities detected.</p></div>
+        </div>
+    </div>
+<script>
+        // --- 🔊 SYSTEM VOICE FOR POPUP (NEW) ---
+        function playSystemVoice(text) {
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.rate = 1.1; // Slightly robotic speed
+            utter.pitch = 0.8; // Deep voice
+            window.speechSynthesis.speak(utter);
+        }
+
+        // --- 🧠 DEEP SEARCH SYSTEM ---
+        function openDeepSearch() { 
+            document.getElementById('deepSearchModal').classList.remove('hidden'); 
+            playSystemVoice("Identity Verified. Select search protocols."); 
+        }
+        function closeDeepSearch() { document.getElementById('deepSearchModal').classList.add('hidden'); }
+        function toggleKeyword(el) { el.classList.toggle('active'); }
+        
+        function applyDeepSearch() {
+            const actives = document.querySelectorAll('.keyword-chip.active');
+            const tagContainer = document.getElementById('activeTags');
+            tagContainer.innerHTML = ''; 
+            
+            // Add visual tags to chat input area
+            actives.forEach(el => {
+                tagContainer.innerHTML += `<div class="px-2 py-1 bg-warning/20 border border-warning/50 rounded text-[10px] text-warning font-mono whitespace-nowrap animate-float shadow-[0_0_10px_rgba(250,204,21,0.3)]">${el.innerText}</div>`;
+            });
+            
+            if(actives.length > 0) playSystemVoice("Parameters locked. Ready to execute.");
+            closeDeepSearch();
+        }
+
+        // --- AUDIO ---
+        const typeCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTypingSound() {
+            if (typeCtx.state === 'suspended') typeCtx.resume();
+            const osc = typeCtx.createOscillator(); const gain = typeCtx.createGain();
+            osc.connect(gain); gain.connect(typeCtx.destination); osc.type = 'sine'; 
+            osc.frequency.setValueAtTime(180, typeCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(100, typeCtx.currentTime+0.1);
+            gain.gain.setValueAtTime(0.1, typeCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, typeCtx.currentTime+0.1);
+            osc.start(); osc.stop(typeCtx.currentTime+0.1);
+        }
+        document.body.addEventListener('click', function() { if (typeCtx.state === 'suspended') typeCtx.resume(); }, { once: true });
+
+        // --- GRAPH ---
+        const canvas = document.getElementById('networkCanvas');
+        if (canvas) {
+            const ctx = canvas.getContext('2d'); let width, height;
+            function resize() { width = canvas.parentElement.offsetWidth; height = canvas.parentElement.offsetHeight; canvas.width = width; canvas.height = height; }
+            window.addEventListener('resize', resize); resize();
+            const dataPoints = []; const maxPoints = 50; for(let i=0; i<maxPoints; i++) dataPoints.push(height/2);
+            function drawGraph() {
+                dataPoints.shift(); const last = dataPoints[dataPoints.length - 1]; const change = (Math.random() - 0.5) * 40; 
+                let newPoint = last + change; if (newPoint < 5) newPoint = 5; if (newPoint > height - 5) newPoint = height - 5;
+                dataPoints.push(newPoint);
+                ctx.clearRect(0, 0, width, height); ctx.beginPath(); ctx.moveTo(0, dataPoints[0]);
+                for(let i=1; i<dataPoints.length; i++) { const x = (i / (maxPoints - 1)) * width; const y = dataPoints[i]; ctx.lineTo(x, y); }
+                ctx.strokeStyle = '#00f3ff'; ctx.lineWidth = 2; ctx.shadowBlur = 10; ctx.shadowColor = '#00f3ff'; ctx.stroke();
+                ctx.lineTo(width, height); ctx.lineTo(0, height); ctx.closePath();
+                const grad = ctx.createLinearGradient(0, 0, 0, height); grad.addColorStop(0, 'rgba(0, 243, 255, 0.2)'); grad.addColorStop(1, 'rgba(0, 243, 255, 0)');
+                ctx.fillStyle = grad; ctx.fill();
+                requestAnimationFrame(drawGraph);
+            }
+            drawGraph();
+            setInterval(() => { document.getElementById('net-in').innerText = (Math.random()*800+100).toFixed(1)+' MB/s'; document.getElementById('net-out').innerText = (Math.random()*500+50).toFixed(1)+' MB/s'; }, 800);
+        }
+
+        // --- UPLOAD MENU ---
+        const uploadMenu = document.getElementById('uploadMenu');
+        function toggleUploadMenu() { if (uploadMenu.classList.contains('upload-menu-enter')) { uploadMenu.classList.remove('upload-menu-enter'); uploadMenu.classList.add('upload-menu-active'); } else { uploadMenu.classList.add('upload-menu-enter'); uploadMenu.classList.remove('upload-menu-active'); } }
+        document.addEventListener('click', (e) => { if (!uploadMenu.contains(e.target) && !e.target.closest('button[onclick="toggleUploadMenu()"]')) uploadMenu.classList.add('upload-menu-enter'); });
+        function triggerUpload(type) { const input = document.getElementById('fileInput'); input.accept = type === 'image' ? "image/*" : type === 'audio' ? "audio/*" : "*"; input.click(); toggleUploadMenu(); }
+        
+        let currentAttachment = null;
+        function handleFileSelect(input) { if (input.files && input.files[0]) { const file = input.files[0]; const reader = new FileReader(); reader.onload = function(e) { showPreview(file.name, e.target.result, file.type.startsWith('image')); }; reader.readAsDataURL(file); } }
+        function showPreview(name, data, isImage) { currentAttachment = { type: isImage ? 'image' : 'file', data: data, name: name }; const container = document.getElementById('previewContainer'); const img = document.getElementById('previewImage'); const icon = document.getElementById('filePreview'); document.getElementById('fileName').innerText = name; if (isImage) { img.src = data; img.classList.remove('hidden'); icon.classList.add('hidden'); } else { img.classList.add('hidden'); icon.classList.remove('hidden'); } container.classList.remove('opacity-0', 'transform', 'translate-y-10'); }
+        function clearAttachment() { currentAttachment = null; document.getElementById('fileInput').value = ''; document.getElementById('previewContainer').classList.add('opacity-0', 'transform', 'translate-y-10'); }
+
+        // --- CAMERA ---
+        let stream = null;
+        async function openCamera() { try { const modal = document.getElementById('cameraModal'); const video = document.getElementById('cameraFeed'); stream = await navigator.mediaDevices.getUserMedia({ video: true }); video.srcObject = stream; modal.classList.remove('hidden'); } catch (err) { alert("Camera Access Denied"); } }
+        function closeCamera() { const modal = document.getElementById('cameraModal'); if (stream) { stream.getTracks().forEach(track => track.stop()); } modal.classList.add('hidden'); }
+        function capturePhoto() { const video = document.getElementById('cameraFeed'); const canvas = document.getElementById('cameraCanvas'); canvas.width = video.videoWidth; canvas.height = video.videoHeight; canvas.getContext('2d').drawImage(video, 0, 0); const dataUrl = canvas.toDataURL('image/jpeg'); showPreview("camera_capture.jpg", dataUrl, true); closeCamera(); }
+
+        // --- INTEL ---
+        function openIntel(text) {
+            const modal = document.getElementById('intelModal'); const cont = document.getElementById('intelKeywords'); cont.innerHTML = '';
+            const words = text.split(/\s+/).filter(w => w.length > 4 && !['about','their','there','would'].includes(w.toLowerCase())).slice(0, 6);
+            if(words.length === 0) words.push("System", "Security", "Analysis");
+            words.forEach(word => { const clean = word.replace(/[^a-zA-Z]/g, ''); if(clean) cont.innerHTML += `<div class="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-neon font-mono">#${clean.toUpperCase()}</div>`; });
+            modal.classList.remove('hidden');
+        }
+        function closeIntel() { document.getElementById('intelModal').classList.add('hidden'); }
+
+        // --- 🗂️ CARD CLICK INTEGRATION ---
+        function triggerCardCommand(element) {
+            const commandText = element.querySelector('p').innerText;
+            userInput.value = commandText;
+            runScan();
+        }
+
+        // --- 🖋️ TYPEWRITER ENGINE ---
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   // --- 🖋️ SENTINEL HYBRID TYPEWRITER (COLOR FIX) ---
+// --- 🗂️ CARD CLICK LOGIC ---
+        function triggerCardCommand(element) {
+            // Card ke text (jaise "Deep Scan") ko input box mein dalo
+            const commandText = element.querySelector('p').innerText;
+            userInput.value = commandText;
+            runScan();
+        }
+
+        // --- 🖋️ SENTINEL HYBRID TYPEWRITER (COLOR FIX) ---
+        function typeWriter(text, element, speed = 15, callback) {
+            if (!element) return;
+
+            // 1. Tags ko pehle hi HTML spans mein badal do (Blank screen protection)
+            let formatted = text
+                .replace(/\[H\](.*?)\[H\]/g, '<span style="color: #00f3ff; font-weight: bold; text-shadow: 0 0 10px #00f3ff;">$1</span>')
+                .replace(/\[A\](.*?)\[A\]/g, '<span style="color: #ff003c; font-weight: bold; text-shadow: 0 0 10px #ff003c;">$1</span>')
+                .replace(/\[S\](.*?)\[S\]/g, '<span style="color: #39ff14; font-weight: bold; text-shadow: 0 0 10px #39ff14;">$1</span>')
+                .replace(/\[T\](.*?)\[T\]/g, '<span style="color: #f0db4f; font-family: monospace;">$1</span>')
+                .replace(/\n/g, '<br>');
+
+            element.innerHTML = "";
+            let i = 0;
+            let isTag = false;
+            let currentHTML = "";
+
+            function type() {
+                if (i < formatted.length) {
+                    let char = formatted.charAt(i);
+                    
+                    // Tag detection logic
+                    if (char === "<") isTag = true;
+                    if (char === ">") {
+                        isTag = false;
+                        currentHTML += char;
+                        i++;
+                        element.innerHTML = currentHTML;
+                        type(); 
+                        return;
+                    }
+
+                    currentHTML += char;
+                    element.innerHTML = currentHTML;
+                    i++;
+
+                    if (isTag) {
+                        type(); 
+                    } else {
+                        playTypingSound();
+                        scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: 'auto' });
+                        setTimeout(type, speed);
+                    }
+                } else if (callback) {
+                    callback();
+                }
+            }
+            type();
+        }
+
+        function downloadReport() { window.location.href = 'http://127.0.0.1:5002/download_report'; }
+
+        // --- CHAT LOGIC ---
+        const welcomeScreen = document.getElementById('welcome-screen'); const logs = document.getElementById('logs'); const userInput = document.getElementById('userInput'); const scrollArea = document.getElementById('main-scroll'); const voiceToggle = document.getElementById('voiceToggle');
+        
+        const audioCtxChat = new (window.AudioContext || window.webkitAudioContext)();
+        let scanOscillator = null, scanGain = null;
+
+        function startScanSound() {
+            if (audioCtxChat.state === 'suspended') audioCtxChat.resume();
+            scanOscillator = audioCtxChat.createOscillator(); scanGain = audioCtxChat.createGain();
+            scanOscillator.type = 'sine'; scanOscillator.frequency.setValueAtTime(60, audioCtxChat.currentTime);
+            const lfo = audioCtxChat.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = 1; 
+            const lfoGain = audioCtxChat.createGain(); lfoGain.gain.value = 30; 
+            lfo.connect(lfoGain); lfoGain.connect(scanOscillator.frequency); lfo.start();
+            scanOscillator.connect(scanGain); scanGain.connect(audioCtxChat.destination);
+            scanGain.gain.value = 0.005; scanOscillator.start();
+        }
+        function stopScanSound() { if (scanOscillator) { scanGain.gain.exponentialRampToValueAtTime(0.001, audioCtxChat.currentTime+1); scanOscillator.stop(audioCtxChat.currentTime+1); scanOscillator = null; } }
+
+        function speakText(text, force=false) { if (!voiceToggle.checked && !force) return; window.speechSynthesis.cancel(); const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[.*?\]/g, ''); const utterance = new SpeechSynthesisUtterance(cleanText); const voices = window.speechSynthesis.getVoices(); const preferred = voices.find(v => v.name.includes('Google US English') || v.name.includes('Microsoft Zira')); if (preferred) utterance.voice = preferred; window.speechSynthesis.speak(utterance); }
+        function copyText(text, btn) { navigator.clipboard.writeText(text).then(() => { const original = btn.innerHTML; btn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i>'; setTimeout(() => btn.innerHTML = original, 2000); }); }
+        function fillInput(text) { userInput.value = text; userInput.focus(); }
+        function scrollToBottom() { scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: 'smooth' }); }
+
+        async function runScan() {
+            const cmd = userInput.value.trim();
+            if (!cmd && !currentAttachment) return;
+            if (!welcomeScreen.classList.contains('hidden')) { welcomeScreen.style.opacity = '0'; setTimeout(() => { welcomeScreen.classList.add('hidden'); logs.classList.remove('hidden'); logs.classList.add('flex'); }, 300); }
+
+            let attachmentHTML = '';
+            if (currentAttachment) { if (currentAttachment.type === 'image') { attachmentHTML = `<img src="${currentAttachment.data}" class="w-48 h-auto rounded-lg border border-white/20 mb-2 mt-1">`; } else { attachmentHTML = `<div class="flex items-center gap-2 bg-white/10 p-2 rounded-lg border border-white/10 mb-2 mt-1"><i class="fa-solid fa-file-code"></i> <span class="text-xs">${currentAttachment.name}</span></div>`; } }
+
+            const activeTags = document.getElementById('activeTags').innerText;
+            const fullContext = activeTags ? `[CONTEXT: ${activeTags}] ${cmd}` : cmd;
+
+            logs.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full"><div class="flex flex-col items-end">${attachmentHTML}${cmd ? `<div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl rounded-tr-sm font-mono text-sm tracking-wide shadow-lg backdrop-blur-sm">${cmd}</div>` : ''}</div><div class="w-9 h-9 rounded-full bg-deep border border-white/20 flex items-center justify-center text-gray-400 shadow-lg mt-auto"><i class="fa-solid fa-user-secret text-sm"></i></div></div>`;
+            userInput.value = ''; clearAttachment(); scrollToBottom();
+            document.getElementById('activeTags').innerHTML = ''; 
+
+            startScanSound(); 
+            const loadingId = 'load-' + Date.now();
+            logs.innerHTML += `<div id="${loadingId}" class="flex flex-col gap-2 max-w-4xl fade-in-up opacity-60 ml-2"><div class="flex items-center gap-2 text-neon text-xs font-mono tracking-widest uppercase"><i class="fa-solid fa-circle-notch animate-spin"></i> PROCESSING<span class="animate-pulse">....</span></div></div>`;
+            scrollToBottom();
+
+            try {
+                const response = await fetch('http://127.0.0.1:5002/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: fullContext || "Analyze attachment" }) });
+                const data = await response.json();
+                document.getElementById(loadingId).remove(); stopScanSound();
+                
+                const isDanger = data.status === 'danger'; 
+                const accent = isDanger ? 'border-danger' : 'border-neon/50';
+                const textCol = isDanger ? 'text-danger' : 'text-neon/70';
+                const glow = isDanger ? 'danger-text' : 'sentinel-text';
+                const head = isDanger ? '⚠️ THREAT DETECTED' : '🛡️ SENTINEL RESPONSE';
+                const clean = data.ai_response.replace('[SENTINEL]', '').replace('BLOCKING:', '');
+                const plain = clean.replace(/'/g, "\\'");
+                const responseId = 'res-' + Date.now();
+
+                logs.innerHTML += `<div class="flex gap-4 fade-in-up w-full max-w-4xl"><div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon shadow-[0_0_15px_rgba(0,243,255,0.2)] animate-pulse-slow flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div><div class="flex flex-col w-full"><div class="flex items-center gap-3 ${textCol} text-xs font-mono tracking-widest uppercase mb-1 opacity-80">${head}<div class="h-[1px] flex-1 bg-gradient-to-r from-current to-transparent opacity-30"></div></div><div class="pl-6 border-l-2 ${accent} relative"><div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full ${isDanger ? 'bg-danger' : 'bg-neon'} shadow-[0_0_10px_currentColor]"></div><p id="${responseId}" class="text-white font-light ${glow} mb-4"></p><div id="actions-${responseId}" class="opacity-0 flex items-center gap-4 border-t border-white/5 pt-3 mt-2 transition-opacity duration-500"><button onclick="speakText('${plain}', true)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-neon/10 hover:text-neon transition text-[10px] text-gray-400 font-mono border border-white/5"><i class="fa-solid fa-volume-high"></i> LISTEN</button><button onclick="copyText('${plain}', this)" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-green-500/10 hover:text-green-400 transition text-[10px] text-gray-400 font-mono border border-white/5"><i class="fa-solid fa-copy"></i> COPY</button><button onclick="openIntel('${plain}')" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-purple/10 hover:text-purple transition text-[10px] text-gray-400 font-mono border border-white/5"><i class="fa-solid fa-microscope"></i> INTEL</button></div></div></div></div>`;
+                
+                // Trigger typewriter
+                const targetElement = document.getElementById(responseId);
+                typeWriter(clean, targetElement, 20, () => {
+                    document.getElementById(`actions-${responseId}`).classList.remove('opacity-0');
+                    if(isDanger) document.getElementById('downloadBtn').style.display = 'block';
+                });
+
+                speakText(clean); scrollToBottom();
+            } catch (error) {
+                stopScanSound(); if(document.getElementById(loadingId)) document.getElementById(loadingId).remove(); 
+                logs.innerHTML += `<div class="text-danger font-mono text-sm fade-in-up pl-6 border-l-2 border-danger">:: CONNECTION LOST ::</div>`; scrollToBottom();
+            }
+        }
+        document.getElementById("userInput").addEventListener("keydown", (e) => { playTypingSound(); if (e.key === "Enter") runScan(); });
+
+
+
+
+
+
+
+
+async function runScan() {
+    const cmd = userInput.value.trim();
+    if (!cmd && !currentAttachment) return;
+
+    if (!welcomeScreen.classList.contains('hidden')) { 
+        welcomeScreen.style.opacity = '0'; 
+        setTimeout(() => { 
+            welcomeScreen.classList.add('hidden'); 
+            logs.classList.remove('hidden'); 
+            logs.classList.add('flex'); 
+        }, 300); 
+    }
+
+    let attachmentHTML = '';
+    if (currentAttachment) {
+        if (currentAttachment.type === 'image') { 
+            attachmentHTML = `<img src="${currentAttachment.data}" class="w-48 h-auto rounded-lg border border-white/20 mb-2 mt-1">`; 
+        } else { 
+            attachmentHTML = `<div class="flex items-center gap-2 bg-white/10 p-2 rounded-lg border border-white/10 mb-2 mt-1"><i class="fa-solid fa-file-code"></i> <span class="text-xs">${currentAttachment.name}</span></div>`; 
+        }
+    }
+
+    const activeTags = document.getElementById('activeTags').innerText;
+    const fullContext = activeTags ? `[CONTEXT: ${activeTags}] ${cmd}` : cmd;
+
+    // --- USER MESSAGE ---
+    logs.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full mb-6">
+        <div class="flex flex-col items-end">${attachmentHTML}${cmd ? `<div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl rounded-tr-sm font-mono text-sm tracking-wide shadow-lg backdrop-blur-sm">${cmd}</div>` : ''}</div>
+        <div class="w-9 h-9 rounded-full bg-deep border border-white/20 flex items-center justify-center text-gray-400 shadow-lg mt-auto"><i class="fa-solid fa-user-secret text-sm"></i></div>
+    </div>`;
+    
+    userInput.value = ''; clearAttachment(); 
+    document.getElementById('activeTags').innerHTML = ''; 
+    scrollToBottom(); // Instant scroll after user message
+
+    startScanSound();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // --- 🧠 FIXED 2050 NEURAL THINKING ORB ---
+    const loadingId = 'load-' + Date.now();
+    const thinkingLines = [
+        "🛰️ CONNECTING TO NEURAL SATELLITE",
+        "⚡ DECRYPTING QUANTUM PACKETS",
+        "🛡️ HARDENING TACTICAL GRID",
+        "🧠 SYNCING AI CONSCIOUSNESS"
+    ];
+    let lineIdx = 0;
+
+   
+    logs.innerHTML += `
+    <div id="${loadingId}" class="flex items-center gap-5 fade-in-up ml-2 my-8 w-full">
+        <div class="neural-orb">
+            <div class="orb-ring"></div>
+            <div class="orb-ring-inner"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fa-solid fa-brain text-[10px] text-neon animate-pulse"></i>
+            </div>
+        </div>
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2 text-neon text-[10px] font-mono tracking-[0.2em] uppercase">
+                <span id="thinking-text">${thinkingLines[0]}</span>
+            </div>
+            <div class="h-[2px] w-32 bg-white/10 mt-1 overflow-hidden">
+                <div class="h-full bg-neon animate-loading-bar" style="width: 40%"></div>
+            </div>
+        </div>
+    </div>`;
+    
+   
+    setTimeout(scrollToBottom, 50);
+
+    const thinkingInterval = setInterval(() => {
+        const textEl = document.getElementById('thinking-text');
+        if (textEl) {
+            textEl.innerText = thinkingLines[lineIdx % thinkingLines.length];
+            lineIdx++;
+        }
+    }, 1000);
+
+  
+
+
+
+
+
+
+
+
+
+
+
+try {
+    // 🚀 
+    const response = await fetch('http://127.0.0.1:5002/scan', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ command: fullContext || "Analyze" }) 
+    });
+    
+    const data = await response.json();
+    // ... baaki logic same
+        
+        const ai_text = data.ai_response;
+        
+        // --- 🛰️ MISSION HISTORY LOGGING ---
+        if (typeof saveToHistory === "function") {
+            saveToHistory(cmd, ai_text);
+        }
+
+        clearInterval(thinkingInterval); 
+        const loadElem = document.getElementById(loadingId);
+        if(loadElem) loadElem.remove(); 
+        stopScanSound();
+
+
+
+
+
+
+
+        
+        const isDanger = data.status === 'danger'; 
+        const accent = isDanger ? 'border-danger' : 'border-neon/50';
+        const textCol = isDanger ? 'text-danger' : 'text-neon/70';
+        const head = isDanger ? '⚠️ THREAT DETECTED' : '🛡️ SENTINEL RESPONSE';
+        const clean = data.ai_response.replace('[SENTINEL]', '').trim();
+        const plain = clean.replace(/'/g, "\\'");
+        const responseId = 'res-' + Date.now();
+
+        // --- SENTINEL RESPONSE ---
+        logs.innerHTML += `<div class="flex gap-4 fade-in-up w-full max-w-4xl mb-8">
+            <div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon shadow-[0_0_15px_rgba(0,243,255,0.2)] flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div>
+            <div class="flex flex-col w-full">
+                <div class="flex items-center gap-3 ${textCol} text-xs font-mono tracking-widest uppercase mb-1 opacity-80">${head}<div class="h-[1px] flex-1 bg-gradient-to-r from-current to-transparent opacity-30"></div></div>
+                <div class="pl-6 border-l-2 ${accent} relative">
+                    <div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full ${isDanger ? 'bg-danger' : 'bg-neon'}"></div>
+                    <p id="${responseId}" class="text-white font-light mb-4 leading-relaxed"></p>
+                    <div id="actions-${responseId}" class="opacity-0 flex items-center gap-4 border-t border-white/5 pt-3 mt-2 transition-opacity duration-500">
+                        <button onclick="speakText('${plain}', true)" class="text-[10px] text-gray-400 font-mono hover:text-neon transition"><i class="fa-solid fa-volume-high"></i> LISTEN</button>
+                        <button onclick="copyText('${plain}', this)" class="text-[10px] text-gray-400 font-mono hover:text-green-400 transition"><i class="fa-solid fa-copy"></i> COPY</button>
+                        <button onclick="openIntel('${plain}')" class="text-[10px] text-gray-400 font-mono hover:text-purple-400 transition"><i class="fa-solid fa-microscope"></i> INTEL</button>
+                      
+                      <button onclick="downloadSingleReport('${responseId}')" class="text-[10px] text-gray-400 font-mono hover:text-danger transition flex items-center gap-1">
+                      <i class="fa-solid fa-file-pdf"></i> PDF </button> 
+                    </div>
+                </div>
+            </div>
+        </div>`;
+
+        const targetElement = document.getElementById(responseId);
+        typeWriter(clean, targetElement, 20, () => {
+            document.getElementById(`actions-${responseId}`).classList.remove('opacity-0');
+            if(isDanger) document.getElementById('downloadBtn').style.display = 'block';
+        });
+
+        speakText(clean); 
+        scrollToBottom();
+    } catch (error) {
+        clearInterval(thinkingInterval);
+        stopScanSound(); 
+        if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+        logs.innerHTML += `<div class="text-danger font-mono text-sm fade-in-up pl-6 border-l-2 border-danger">:: CONNECTION LOST ::</div>`;
+        scrollToBottom();
+    }
+}
+
+
+//mic attach 
+function startListening() {
+    const micBtn = document.getElementById('micBtn');
+    const micGlow = document.getElementById('micGlow');
+    
+    try {
+        recognition.start();
+        
+        // UI Update: Listening State
+        micBtn.classList.add('text-neon');
+        micGlow.classList.remove('hidden');
+        userInput.placeholder = "🛰️ LISTENING FOR COMMANDS...";
+        
+        // Sound effect (Optional: Chhoti si beep)
+        playSystemVoice("Listening...");
+    } catch (e) {
+        console.log("Mic already active or blocked");
+    }
+}
+
+// 
+recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    userInput.value = transcript;
+    
+    resetMicUI();
+    runScan(); 
+};
+
+
+recognition.onend = () => { resetMicUI(); };
+
+function resetMicUI() {
+    const micBtn = document.getElementById('micBtn');
+    const micGlow = document.getElementById('micGlow');
+    micBtn.classList.remove('text-neon');
+    micGlow.classList.add('hidden');
+    userInput.placeholder = "Enter tactical command...";
+}
+
+
+
+
+
+   </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function runScan() {
+    const cmd = userInput.value.trim();
+    if (!cmd && !currentAttachment) return;
+
+    // Welcome screen switch
+    if (!welcomeScreen.classList.contains('hidden')) { 
+        welcomeScreen.style.opacity = '0'; 
+        setTimeout(() => { 
+            welcomeScreen.classList.add('hidden'); 
+            logs.classList.remove('hidden'); 
+            logs.classList.add('flex'); 
+        }, 300); 
+    }
+
+    // Attachment check
+    let attachmentHTML = '';
+    if (currentAttachment) {
+        if (currentAttachment.type === 'image') { 
+            attachmentHTML = `<img src="${currentAttachment.data}" class="w-48 h-auto rounded-lg border border-white/20 mb-2 mt-1">`; 
+        } else { 
+            attachmentHTML = `<div class="flex items-center gap-2 bg-white/10 p-2 rounded-lg border border-white/10 mb-2 mt-1"><i class="fa-solid fa-file-code"></i> <span class="text-xs">${currentAttachment.name}</span></div>`; 
+        }
+    }
+
+    // User message logic
+    logs.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full mb-6">
+        <div class="flex flex-col items-end">${attachmentHTML}${cmd ? `<div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl rounded-tr-sm font-mono text-sm tracking-wide shadow-lg backdrop-blur-sm">${cmd}</div>` : ''}</div>
+        <div class="w-9 h-9 rounded-full bg-deep border border-white/20 flex items-center justify-center text-gray-400 shadow-lg mt-auto"><i class="fa-solid fa-user-secret text-sm"></i></div>
+    </div>`;
+    
+    userInput.value = ''; 
+    clearAttachment(); 
+    scrollToBottom();
+
+    startScanSound(); 
+
+   
+    const loadingId = 'load-' + Date.now();
+    logs.innerHTML += `
+    <div id="${loadingId}" class="flex items-center gap-5 fade-in-up ml-2 my-8 w-full">
+        <div class="neural-orb"><div class="orb-ring"></div><div class="orb-ring-inner"></div><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-brain text-[10px] text-neon animate-pulse"></i></div></div>
+        <div class="flex flex-col"><div class="flex items-center gap-2 text-neon text-[10px] font-mono tracking-[0.2em] uppercase"><span id="thinking-text">NEURAL_SYNCING...</span></div></div>
+    </div>`;
+    scrollToBottom();
+
+   try {
+    const response = await fetch('http://127.0.0.1:5002/scan', { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ command: fullContext || "Analyze" }) 
+    });
+    
+    
+    // ... 
+        
+        const data = await response.json();
+        const ai_text = data.ai_response || data.response; // 
+
+        // Clean UI
+        const loadElem = document.getElementById(loadingId);
+        if(loadElem) loadElem.remove(); 
+        stopScanSound();
+
+        if (ai_text) {
+            // Save to LocalStorage
+            if (typeof saveToHistory === "function") {
+                saveToHistory(cmd, ai_text);
+            }
+
+            const isDanger = data.status === 'danger'; 
+            const accent = isDanger ? 'border-danger' : 'border-neon/50';
+            const textCol = isDanger ? 'text-danger' : 'text-neon/70';
+            const head = isDanger ? '⚠️ THREAT DETECTED' : '🛡️ SENTINEL RESPONSE';
+            const responseId = 'res-' + Date.now();
+
+            // Sentinel UI Response
+            logs.innerHTML += `<div class="flex gap-4 fade-in-up w-full max-w-4xl mb-8">
+                <div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div>
+                <div class="flex flex-col w-full">
+                    <div class="flex items-center gap-3 ${textCol} text-xs font-mono tracking-widest uppercase mb-1 opacity-80">${head}<div class="h-[1px] flex-1 bg-gradient-to-r from-current to-transparent opacity-30"></div></div>
+                    <div class="pl-6 border-l-2 ${accent} relative">
+                        <div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full ${isDanger ? 'bg-danger' : 'bg-neon'}"></div>
+                        <p id="${responseId}" class="text-white font-light mb-4 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>`;
+
+            // Start Typewriter
+            const targetElement = document.getElementById(responseId);
+            typeWriter(ai_text, targetElement, 20);
+            speakText(ai_text); 
+            scrollToBottom();
+        }
+    } catch (error) {
+        stopScanSound(); 
+        if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+        logs.innerHTML += `<div class="text-danger font-mono text-sm fade-in-up">:: SYSTEM_ERROR: UPLINK_FAILED ::</div>`;
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+/* 2050 Futuristic Orb Loader */
+.neural-orb {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,243,255,0.3) 0%, rgba(0,0,0,0) 70%);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+}
+
+.orb-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 2px solid transparent;
+    border-top-color: #00f3ff;
+    border-radius: 50%;
+    animation: orb-rotate 1s linear infinite;
+}
+
+.orb-ring-inner {
+    position: absolute;
+    top: 5px; left: 5px; right: 5px; bottom: 5px;
+    border: 2px solid transparent;
+    border-bottom-color: #ff003c; /* Red touch for tactical feel */
+    border-radius: 50%;
+    animation: orb-rotate 1.5s linear infinite reverse;
+}
+
+@keyframes orb-rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+
+
+
+<script>
+
+
+// --- 🛰️ SENTINEL CORE ENGINES ---
+
+// 1. Voice Recognition Initialization
+const recognition = (function() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        console.error("Speech Recognition not supported in this browser.");
+        return null;
+    }
+    const rec = new SpeechRecognition();
+    rec.lang = 'hi-IN'; // Hinglish Support
+    rec.continuous = false;
+    rec.interimResults = false;
+    return rec;
+})();
+
+let isListening = false;
+
+// 2. Toggle Mic Function (ON/OFF Logic)
+function startListening() {
+    if (!recognition) {
+        alert("Aapka browser voice support nahi karta.");
+        return;
+    }
+
+    const micBtn = document.getElementById('micBtn');
+    const micGlow = document.getElementById('micGlow');
+    const uInput = document.getElementById('userInput');
+
+    if (!isListening) {
+        try {
+            recognition.start();
+            isListening = true;
+            micBtn.classList.add('text-neon');
+            micBtn.classList.remove('text-gray-400');
+            micGlow.classList.remove('hidden');
+            uInput.placeholder = "🛰️ LISTENING... (Click mic to OFF)";
+            console.log("Sentinel: Mic Activated");
+        } catch (e) { console.log("Mic busy..."); }
+    } else {
+        recognition.stop();
+        resetMicUI();
+    }
+}
+
+// 3. Reset Mic UI
+function resetMicUI() {
+    isListening = false;
+    const micBtn = document.getElementById('micBtn');
+    const micGlow = document.getElementById('micGlow');
+    const uInput = document.getElementById('userInput');
+    
+    if (micBtn) {
+        micBtn.classList.remove('text-neon');
+        micBtn.classList.add('text-gray-400');
+        micBtn.style.color = ""; // Reset inline color
+    }
+    if (micGlow) micGlow.classList.add('hidden');
+    if (uInput) uInput.placeholder = "Enter tactical command...";
+}
+
+// 4. Handle Voice Results
+if (recognition) {
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('userInput').value = transcript;
+        resetMicUI();
+        runScan(); // V
+    };
+
+    recognition.onend = () => { if(isListening) resetMicUI(); };
+    recognition.onerror = () => { resetMicUI(); };
+}
+
+// 5. Fill Input from Cards
+function fillInput(text) {
+    const uInput = document.getElementById('userInput');
+    if (uInput) {
+        uInput.value = text;
+        uInput.placeholder = "Enter tactical command...";
+        runScan(); // Card\
+    }
+}
+
+
+function fillInput(text) {
+    const uInput = document.getElementById('userInput');
+    if (uInput) {
+        // 1
+        uInput.value = text + " "; 
+        
+        // 2. Placeh
+        uInput.placeholder = "Enter tactical command...";
+        
+       
+        uInput.focus();
+        
+        console.log("Card command loaded: " + text);
+    }
+}
+
+
+
+
+
+
+
+function fillInput(text) {
+    const uInput = document.getElementById('userInput');
+    if (!uInput) return;
+
+    uInput.value = ""; //
+    let i = 0;
+    uInput.focus();
+
+    // 🚀 Typing 
+    const typing = setInterval(() => {
+        if (i < text.length) {
+            uInput.value += text.charAt(i);
+            i++;
+            // Input bo
+            uInput.classList.add('border-neon', 'shadow-[0_0_15px_rgba(0,243,255,0.4)]');
+        } else {
+            clearInterval(typing);
+            // 
+            uInput.classList.remove('shadow-[0_0_15px_rgba(0,243,255,0.4)]');
+        }
+    }, 30); // 30ms typing speed
+}
+
+    
+
+
+
+
+
+
+
+
+
+function fillInput(text) {
+    const uInput = document.getElementById('userInput');
+    const inputWrapper = uInput.parentElement;
+    
+    uInput.value = "";
+    uInput.focus();
+
+    // 1. ⚡ Ripple Effect (Input box se waves nikalna)
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    inputWrapper.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+
+    // 2. 🚨 Laser Scan Beam (Upar se niche scan)
+    const beam = document.createElement('div');
+    beam.className = 'scan-beam';
+    inputWrapper.appendChild(beam);
+    setTimeout(() => beam.remove(), 1500);
+
+    // 3. ⌨️ Hacker Typing Animation
+    let i = 0;
+    const typing = setInterval(() => {
+        if (i < text.length) {
+            uInput.value += text.charAt(i);
+            i++;
+            
+            uInput.style.transform = `translateX(${Math.random() * 2 - 1}px)`;
+        } else {
+            clearInterval(typing);
+            uInput.style.transform = `translateX(0)`;
+        }
+    }, 40);
+}
+</script>
+
+
+<style>
+/* Pulsing Circle Animation */
+/* Laser Scanning Line */
+.scan-beam {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, transparent, #00f3ff, transparent);
+    box-shadow: 0 0 15px #00f3ff;
+    z-index: 10;
+    pointer-events: none;
+    animation: scan-move 1.5s ease-in-out forwards;
+}
+
+@keyframes scan-move {
+    0% { top: 0; opacity: 0; }
+    50% { opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+/* Water Ripple Effect for Input */
+.ripple {
+    position: absolute;
+    border: 1px solid #00f3ff;
+    border-radius: 20px; /* Match input rounded-xl */
+    pointer-events: none;
+    animation: ripple-effect 0.8s ease-out forwards;
+}
+
+@keyframes ripple-effect {
+    0% { inset: 0; opacity: 1; transform: scale(1); }
+    100% { inset: -20px; opacity: 0; transform: scale(1.1); }
+}
+</style>
+
+<script>
+  
+  
+  let isMapVisible = false;
+
+function toggleThreatMap() {
+    const monitor = document.getElementById('threat-monitor');
+    const welcome = document.getElementById('welcome-screen');
+
+    if (!isMapVisible) {
+        // 1. Map Monitor 
+        monitor.classList.remove('hidden');
+        setTimeout(() => {
+            monitor.classList.remove('opacity-0');
+            monitor.classList.add('opacity-100');
+        }, 10);
+
+        // 2. Welcome 
+        if(welcome) welcome.classList.add('hidden');
+
+        // 3. 
+        initLiveMap(); // Aa canvas setup function
+        
+        isMapVisible = true;
+        console.log("Sentinel: Threat Analyzer Dashboard Engaged.");
+    } else {
+        // 1. Map Monitor chhupao
+        monitor.classList.add('opacity-0');
+        setTimeout(() => {
+            monitor.classList.add('hidden');
+            // 2. Welcome screen wapas dikhao
+            if(welcome) welcome.classList.remove('hidden');
+        }, 500);
+
+        isMapVisible = false;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function openTacticalModal() {
+    const modal = document.getElementById('tacticalModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTacticalModal() {
+    const modal = document.getElementById('tacticalModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = 'auto';
+}
+
+function triggerDashboardFromModal() {
+    closeTacticalModal();
+    const monitor = document.getElementById('threat-monitor');
+    const welcome = document.getElementById('welcome-screen');
+    
+    if(welcome) welcome.classList.add('hidden');
+    if(monitor) {
+        monitor.classList.remove('hidden');
+        setTimeout(() => monitor.classList.add('opacity-100'), 50);
+        if(typeof startGlobalMap === 'function') startGlobalMap(); // Assuming your map function is named this
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") closeTacticalModal();
+});
+</script>
+
+<style>
+
+
+/* Mini Landscape Glass */
+.mini-console {
+    background: rgba(10, 15, 25, 0.85);
+    backdrop-filter: blur(25px);
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+/* Small Landscape Button */
+.compact-btn {
+    height: 60px; /* Chhoti height for Landscape look */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.4s ease;
+}
+
+.compact-btn:hover {
+    background: rgba(0, 243, 255, 0.1);
+    border-color: rgba(0, 243, 255, 0.4);
+    transform: translateY(-3px);
+}
+</style>
+
+
+
+
+
+
+
+
+
+
+<script>
+    
+
+    function toggleUploadMenu() {
+    const menu = document.getElementById('uploadMenu');
+    if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        setTimeout(() => {
+            menu.classList.remove('opacity-0', 'translate-y-2');
+            menu.classList.add('opacity-100', 'translate-y-0');
+        }, 10);
+    } else {
+        menu.classList.add('opacity-0', 'translate-y-2');
+        menu.classList.remove('opacity-100', 'translate-y-0');
+        setTimeout(() => menu.classList.add('hidden'), 300);
+    }
+}
+
+function triggerUpload(type) {
+    const fileInput = document.getElementById('fileInput');
+    
+    // Typ
+  
+    if (type === 'image') fileInput.accept = "image/*";
+    else if (type === 'audio') fileInput.accept = "audio/*";
+    else fileInput.accept = ".txt,.pdf,.json,.js,.py";
+
+    // Menu b
+    fileInput.click();
+    toggleUploadMenu();
+    
+    console.log("Sentinel: Accessing " + type + " database...");
+}
+
+
+
+
+
+function clearAttachment() {
+    currentAttachment = null;
+    const input = document.getElementById('fileInput');
+    const container = document.getElementById('previewContainer');
+    
+    if (input) input.value = ''; // Input clear
+ 
+    if (container) {
+        container.classList.add('opacity-0', 'translate-y-10');
+        playSystemVoice("Data packet purged.");
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+// --- 📋 COPY LOGIC ---
+function copyToClipboard(text, btn) {
+    const tempInput = document.createElement("textarea");
+    tempInput.value = text.replace(/<[^>]*>?/gm, ''); // HTML tags hata kar copy karega
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+    
+    const original = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-check text-green-400"></i> COPIED';
+    setTimeout(() => { btn.innerHTML = original; }, 2000);
+}
+
+// --- 🔊 UPDATED SPEAKER LOGIC ---
+function speakText(text, force = false) {
+    if (!document.getElementById('voiceToggle').checked && !force) return;
+    window.speechSynthesis.cancel(); // P
+    
+   
+    const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[.*?\]/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 0.9;
+    
+    window.speechSynthesis.speak(utterance);
+}
+
+// --- 🧠 INTEL MODAL TRIGGER ---
+function openIntel(text) {
+    const modal = document.getElementById('intelModal');
+    const cont = document.getElementById('intelKeywords');
+    cont.innerHTML = '';
+    
+    // Important keywords nikaalna
+    const words = text.split(/\s+/).filter(w => w.length > 5).slice(0, 6);
+    words.forEach(word => {
+        const clean = word.replace(/[^a-zA-Z]/g, '').toUpperCase();
+        if(clean) cont.innerHTML += `<div class="px-3 py-1 bg-neon/10 border border-neon/30 rounded-full text-[10px] text-neon font-mono">#${clean}</div>`;
+    });
+    modal.classList.remove('hidden');
+}
+
+
+
+
+
+</script>
+<script>
+    
+
+    function downloadSingleReport(resId) {
+    const reportText = document.getElementById(resId).innerText;
+    
+    // AI Voice Trigger
+    speakAction("Commander, extracting this specific intelligence fragment into an encrypted PDF.");
+
+   
+    fetch('http://127.0.0.1:5002/generate_quick_pdf', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: reportText })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SENTINEL_INTEL_${Date.now()}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+    })
+    .catch(err => console.error("PDF Export failed:", err));
+}
+
+
+
+
+
+
+</script>
+
+
+<style>
+
+
+/* Tactical Colors for UI */
+.sentinel-heading { color: #00f3ff; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00f3ff; }
+.sentinel-alert { color: #ff0f4b; font-weight: 700; animation: pulse-red 2s infinite; }
+.sentinel-success { color: #00ff41; font-weight: 600; text-shadow: 0 0 5px #00ff41; }
+.sentinel-tech { color: #facc15; font-family: 'JetBrains Mono', monospace; background: rgba(250, 204, 21, 0.1); padding: 2px 4px; border-radius: 4px; }
+.sentinel-bullet { color: #bc13fe; margin-right: 8px; font-weight: bold; }
+
+@keyframes pulse-red {
+    0% { text-shadow: 0 0 5px #ff0f4b; }
+    50% { text-shadow: 0 0 20px #ff0f4b; }
+    100% { text-shadow: 0 0 5px #ff0f4b; }
+}
+    </style>
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+// 1. Core Speaker Function (Forceful Integration)
+window.speakText = function(text) {
+    // Memory check: Kya voice ON hai?
+    const voiceEnabled = localStorage.getItem('voiceToggle') === 'true';
+    if (!voiceEnabled) return;
+
+   
+    window.speechSynthesis.cancel(); 
+
+    const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[.*?\]/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    
+    // Sentinel Voice Signature (Deep & Robotic)
+    utterance.rate = 1.0; 
+    utterance.pitch = 0.85; 
+    
+    window.speechSynthesis.speak(utterance);
+    console.log("🔊 Sentinel Neural Voice: Emitting...");
+};
+
+// 2. Typing Sound Logic
+window.playTypingSound = function() {
+    const soundEnabled = localStorage.getItem('soundToggle') !== 'false';
+    if (!soundEnabled) return;
+
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.frequency.value = 400;
+    gain.gain.value = 0.01;
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.03);
+};
+
+const originalTypeWriterFix = window.typeWriter;
+window.typeWriter = function(text, element, speed, callback) {
+    speakText(text); // Aawaaz shuru karo
+    if (typeof originalTypeWriterFix === 'function') {
+        originalTypeWriterFix(text, element, speed, callback);
+    }
+};
+
+
+
+
+// 1. MISSION HISTORY LOGIC
+
+
+// 2. MISSING UTILITY FUNCTIONS ()
+function playSystemVoice(text) {
+    if ('speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.1;
+        utter.pitch = 0.8;
+        window.speechSynthesis.speak(utter);
+    }
+}
+
+function startScanSound() { console.log("Sound: Scanning started..."); }
+function stopScanSound() { console.log("Sound: Scanning stopped..."); }
+
+function saveToHistory(command, response) {
+    const logEntry = {
+        id: Date.now().toString(), // String for easier matching
+        time: new Date().toLocaleTimeString(),
+        cmd: command.length > 25 ? command.substring(0, 25) + "..." : command,
+        fullRes: response
+    };
+    missionLogs.unshift(logEntry);
+    if (missionLogs.length > 10) missionLogs.pop();
+    localStorage.setItem('sentinel_logs', JSON.stringify(missionLogs));
+    renderHistory();
+}
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+    list.innerHTML = missionLogs.map(log => `
+        <div class="group p-3 border border-white/5 rounded-lg bg-white/5 hover:border-neon/30 transition cursor-pointer relative">
+            <div onclick="loadPastMission('${log.id}')" class="pr-12">
+                <div class="text-[9px] text-neon/50 font-mono mb-1">${log.time}</div>
+                <div id="title-${log.id}" class="text-xs text-white/80 font-mono truncate">${log.cmd}</div>
+            </div>
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="renameHistory('${log.id}', event)" class="text-gray-500 hover:text-warning" title="Rename">
+                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                </button>
+                <button onclick="copyMissionURL('${log.id}', event)" class="text-gray-400 hover:text-neon" title="Copy Link">
+                    <i class="fa-solid fa-link text-[10px]"></i>
+                </button>
+            </div>
+        </div>`).join('');
+}
+
+// 3. RENAME & COPY LOGIC
+function renameHistory(id, event) {
+    if(event) event.stopPropagation();
+    const log = missionLogs.find(l => l.id == id);
+    if (log) {
+        const newName = prompt("📝 Update Mission Protocol Name:", log.cmd);
+        if (newName && newName.trim() !== "") {
+            log.cmd = newName.trim();
+            localStorage.setItem('sentinel_logs', JSON.stringify(missionLogs));
+            renderHistory();
+        }
+    }
+}
+
+function copyMissionURL(id, event) {
+    if(event) event.stopPropagation();
+    const missionURL = `${window.location.origin}${window.location.pathname}?missionId=${id}`;
+    navigator.clipboard.writeText(missionURL).then(() => {
+        alert("🛰️ Tactical Link Saved!");
+        playSystemVoice("Mission link copied.");
+    });
+}
+
+function toggleHistory() {
+    const panel = document.getElementById('historyPanel');
+    if(panel) {
+        panel.classList.toggle('hidden');
+        renderHistory();
+    }
+}
+
+// 4. TEXT FORMATTING
+// function formatText(text) {
+//     if(!text) return "";
+//     return text
+//         .replace(/\[\[STRAT_INTEL\]\][\s\S]*?\[\[STRAT_INTEL\]\]/g, (match) => {
+//             let content = match.replace(/\[\[STRAT_INTEL\]\]/g, '').trim();
+//             return `<div class="sentinel-heading mb-4 mt-6 text-[#00f3ff] font-black tracking-widest uppercase border-b border-neon/30 pb-1">🛰️ STRATEGIC INTELLIGENCE: ${content}</div>`;
+//         })
+//         .replace(/\[\[CRIT_BREACH\]\][\s\S]*?\[\[CRIT_BREACH\]\]/g, (match) => {
+//             let content = match.replace(/\[\[CRIT_BREACH\]\]/g, '').trim();
+//             return `<div class="text-[#ff0f4b] font-bold animate-pulse my-4 bg-red-500/10 p-3 border-l-4 border-red-500">🚨 CRITICAL BREACH: ${content}</div>`;
+//         })
+//         .replace(/\[\[SEC_STABLE\]\][\s\S]*?\[\[SEC_STABLE\]\]/g, (match) => {
+//             let content = match.replace(/\[\[SEC_STABLE\]\]/g, '').trim();
+//             return `<div class="text-[#00ff41] font-bold my-4 bg-green-500/10 p-3 border-l-4 border-green-500">✅ STATUS: ${content}</div>`;
+//         })
+//         .replace(/\[\[DATA_PACKET\]\][\s\S]*?\[\[DATA_PACKET\]\]/g, (match) => {
+//             let content = match.replace(/\[\[DATA_PACKET\]\]/g, '').trim();
+//             return `<div class="bg-black/40 border border-white/10 p-4 my-4 font-mono text-[#facc15] text-xs shadow-inner">// DATA_STREAM_START<br>${content}<br>// DATA_STREAM_END</div>`;
+//         })
+//         .replace(/\n/g, '<br>');
+// }
+
+// 5. CORE EXECUTION ENGINE (The main button logic)
+async function runScan() {
+    const inputElement = document.getElementById('userInput');
+    const logsContainer = document.getElementById('logs');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    
+    if(!inputElement || !logsContainer) return;
+    const message = inputElement.value.trim();
+    if (!message) return;
+
+    if (welcomeScreen) {
+        welcomeScreen.classList.add('hidden');
+        logsContainer.classList.remove('hidden');
+        logsContainer.classList.add('flex');
+    }
+
+    // User Message
+    logsContainer.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full mb-6">
+        <div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl rounded-tr-sm font-mono text-sm tracking-wide shadow-lg backdrop-blur-sm">> ${message}</div>
+        <div class="w-9 h-9 rounded-full bg-deep border border-white/20 flex items-center justify-center text-gray-400 mt-auto"><i class="fa-solid fa-user-secret text-sm"></i></div>
+    </div>`;
+
+    inputElement.value = '';
+    scrollToBottom();
+
+    const loadingId = 'load-' + Date.now();
+    const thinkingLines = [
+        "🛰️ CONNECTING TO NEURAL SATELLITE........",
+        "⚡ DECRYPTING QUANTUM PACKETS...........",
+        "🛡️ HARDENING TACTICAL GRID..............",
+        "🧠 SYNCING AI CONSCIOUSNESS.............."
+    ];
+    let lineIdx = 0;
+
+    logsContainer.innerHTML += `
+    <div id="${loadingId}" class="flex items-center gap-5 fade-in-up ml-2 my-8 w-full">
+        <div class="neural-orb"><div class="orb-ring"></div><div class="orb-ring-inner"></div><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-brain text-[10px] text-neon animate-pulse"></i></div></div>
+        <div class="flex flex-col"><div class="text-neon text-[10px] font-mono tracking-[0.2em] uppercase"><span id="thinking-text">${thinkingLines[0]}</span></div><div class="h-[2px] w-32 bg-white/10 mt-1 overflow-hidden"><div class="h-full bg-neon animate-loading-bar" style="width: 40%"></div></div></div>
+    </div>`;
+    
+    scrollToBottom();
+    const thinkingInterval = setInterval(() => {
+        const textEl = document.getElementById('thinking_text');
+        if (textEl) { textEl.innerText = thinkingLines[lineIdx % thinkingLines.length]; lineIdx++; }
+    }, 1000);
+
+    try {
+        startScanSound();
+        const response = await fetch('http://127.0.0.1:5002/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: message }) });
+        const data = await response.json();
+        const aiResponse = data.ai_response || data.response;
+
+        clearInterval(thinkingInterval);
+        const loadElem = document.getElementById(loadingId);
+        if(loadElem) loadElem.remove();
+        stopScanSound();
+
+        if (aiResponse) {
+            saveToHistory(message, aiResponse);
+            const aiMsgId = 'ai-' + Date.now();
+            logsContainer.innerHTML += `
+                <div class="flex gap-4 fade-in-up w-full max-w-4xl mb-8 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div>
+                    <div class="flex flex-col w-full">
+                        <div class="flex items-center gap-3 text-neon/70 text-xs font-mono tracking-widest uppercase mb-1 opacity-80">🛡️ SENTINEL RESPONSE<div class="h-[1px] flex-1 bg-gradient-to-r from-current to-transparent opacity-30"></div></div>
+                        <div class="pl-6 border-l-2 border-neon/50 relative">
+                            <div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-neon"></div>
+                            <div id="${aiMsgId}" class="text-white font-mono text-sm leading-relaxed"></div>
+                        </div>
+                    </div>
+                </div>`;
+            typeWriter(aiResponse, document.getElementById(aiMsgId));
+        }
+    } catch (error) {
+        clearInterval(thinkingInterval);
+        if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+        console.error("Mission Failed:", error);
+    }
+}
+
+// 6. TYPEWRITER ENGINE
+function typeWriter(text, element, speed = 15, callback) {
+    if (!element) return;
+    let formatted = formatText(text);
+    element.innerHTML = "";
+    let i = 0, isTag = false, currentHTML = "";
+    function type() {
+        if (i < formatted.length) {
+            let char = formatted.charAt(i);
+            if (char === "<") isTag = true;
+            if (char === ">") { isTag = false; currentHTML += char; i++; element.innerHTML = currentHTML; type(); return; }
+            currentHTML += char;
+            element.innerHTML = currentHTML;
+            i++;
+            if (isTag) type();
+            else { scrollToBottom(); setTimeout(type, speed); }
+        } else if (callback) { callback(); }
+    }
+    type();
+}
+
+// 7. DEEP LINK LOAD
+function loadPastMission(id) {
+    const log = missionLogs.find(l => l.id.toString() == id.toString());
+    const logsContainer = document.getElementById('logs');
+    const welcomeScreen = document.getElementById('welcome-screen');
+
+    if (log && logsContainer) {
+        logsContainer.innerHTML = ""; 
+        if (welcomeScreen) welcomeScreen.classList.add('hidden');
+        logsContainer.classList.remove('hidden');
+        logsContainer.classList.add('flex');
+
+        const historyHTML = `
+            <div class="mb-6 p-6 rounded-2xl bg-neon/5 border border-neon/20 border-l-4 border-l-neon text-left w-full shadow-[0_0_30px_rgba(0,243,255,0.05)]">
+                <div class="flex justify-between items-center mb-4 border-b border-neon/10 pb-2">
+                    <p class="text-neon font-mono text-[10px] tracking-[0.2em] uppercase">>> RECALLED MISSION DATA</p>
+                    <p class="text-gray-500 font-mono text-[9px]">${log.time}</p>
+                </div>
+                <div class="text-white/90 font-mono text-sm leading-relaxed">${formatText(log.fullRes)}</div>
+            </div>`;
+        
+        logsContainer.insertAdjacentHTML('beforeend', historyHTML);
+        scrollToBottom();
+    }
+}
+
+function scrollToBottom() {
+    const scrollArea = document.getElementById('main-scroll');
+    if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+}
+
+// 8. INITIALIZATION
+window.onload = function() {
+    renderHistory();
+    const urlParams = new URLSearchParams(window.location.search);
+    const mId = urlParams.get('missionId');
+    if (mId) { setTimeout(() => loadPastMission(mId), 500); }
+
+    document.getElementById('userInput')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') runScan();
+    });
+};
+
+
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+
+    // missionLogs 
+    list.innerHTML = missionLogs.map(log => `
+        <div class="group p-3 border border-white/5 rounded-lg bg-white/5 hover:border-neon/30 transition cursor-pointer relative mb-2">
+            <div onclick="loadPastMission('${log.id}')" class="pr-12">
+                <div class="text-[9px] text-neon/50 font-mono mb-1">${log.time}</div>
+                <div id="title-${log.id}" class="text-xs text-white/80 font-mono truncate">${log.cmd}</div>
+            </div>
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i onclick="renameHistory('${log.id}', event)" class="fa-solid fa-pen-to-square text-[10px] text-gray-500 hover:text-warning"></i>
+                <i onclick="copyMissionURL('${log.id}', event)" class="fa-solid fa-link text-[10px] text-gray-400 hover:text-neon"></i>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Close panel on clicking 'X' or outside
+document.addEventListener('keydown', (e) => {
+    if (e.key === "Escape") {
+        const panel = document.getElementById('historyPanel');
+        if(panel.style.left === '0px') toggleHistory();
+    }
+});
+
+
+
+function toggleHistory() {
+    const panel = document.getElementById('historyPanel');
+    
+    // Check
+    if (panel.style.left === '0px') {
+        panel.style.left = '-300px'; // 
+    } else {
+        panel.style.left = '0px';   
+        renderHistory();             
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function runScan() {
+    const inputElement = document.getElementById('userInput');
+    const logsContainer = document.getElementById('logs');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    
+    if(!inputElement || !logsContainer) return;
+    const message = inputElement.value.trim();
+    if (!message) return;
+
+    if (welcomeScreen) {
+        welcomeScreen.classList.add('hidden');
+        logsContainer.classList.remove('hidden');
+        logsContainer.classList.add('flex');
+    }
+
+    // --- User Message UI ---
+    logsContainer.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full mb-6">
+        <div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl rounded-tr-sm font-mono text-sm shadow-lg backdrop-blur-sm">> ${message}</div>
+        <div class="w-9 h-9 rounded-full bg-deep border border-white/20 flex items-center justify-center text-gray-400 mt-auto"><i class="fa-solid fa-user-secret text-sm"></i></div>
+    </div>`;
+
+    inputElement.value = '';
+    scrollToBottom();
+    if (typeof startScanSound === "function") startScanSound();
+
+    const loadingId = 'load-' + Date.now();
+    logsContainer.innerHTML += `<div id="${loadingId}" class="flex items-center gap-5 fade-in-up ml-2 my-8 w-full">
+        <div class="neural-orb"><div class="orb-ring"></div><div class="orb-ring-inner"></div><div class="absolute inset-0 flex items-center justify-center"><i class="fa-solid fa-brain text-[10px] text-neon animate-pulse"></i></div></div>
+        <div class="flex flex-col"><div class="text-neon text-[10px] font-mono tracking-[0.2em] uppercase">NEURAL_SYNCING...</div></div>
+    </div>`;
+
+    try {
+        const response = await fetch('http://127.0.0.1:5002/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: message }) });
+        const data = await response.json();
+        const aiResponse = data.ai_response || data.response;
+
+        if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+        if (typeof stopScanSound === "function") stopScanSound();
+
+        if (aiResponse) {
+            saveToHistory(message, aiResponse);
+            const aiMsgId = 'ai-' + Date.now();
+            const safeText = aiResponse.replace(/'/g, "\\'").replace(/"/g, '&quot;'); // Text clean-up for buttons
+
+            logsContainer.innerHTML += `
+                <div class="flex gap-4 fade-in-up w-full max-w-4xl mb-8 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div>
+                    <div class="flex flex-col w-full">
+                        <div class="flex items-center gap-3 text-neon/70 text-xs font-mono uppercase mb-1 opacity-80">🛡️ SENTINEL RESPONSE<div class="h-[1px] flex-1 bg-gradient-to-r from-current to-transparent opacity-30"></div></div>
+                        <div class="pl-6 border-l-2 border-neon/50 relative">
+                            <div class="absolute -left-[5px] top-0 w-2 h-2 rounded-full bg-neon"></div>
+                            <div id="${aiMsgId}" class="text-white font-mono text-sm leading-relaxed mb-4"></div>
+
+                            <div id="actions-${aiMsgId}" class="hidden flex items-center gap-4 border-t border-white/5 pt-3 mt-2">
+                                <button onclick="speakText('${safeText}')" class="text-[10px] text-gray-400 hover:text-neon transition flex items-center gap-1"><i class="fa-solid fa-volume-high"></i> LISTEN</button>
+                                <button onclick="navigator.clipboard.writeText('${safeText}'); alert('Copied!');" class="text-[10px] text-gray-400 hover:text-green-400 transition flex items-center gap-1"><i class="fa-solid fa-copy"></i> COPY</button>
+                                <button onclick="openIntelModal('${safeText}')" class="text-[10px] text-gray-400 hover:text-purple-400 transition flex items-center gap-1"><i class="fa-solid fa-microscope"></i> INTEL</button>
+                                <button onclick="window.print()" class="text-[10px] text-gray-400 hover:text-red-400 transition flex items-center gap-1"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            // Voice trigger
+            if (typeof speakText === "function") speakText(aiResponse);
+
+            // Typewriter start
+            typeWriter(aiResponse, document.getElementById(aiMsgId), 15, () => {
+                // Typing khatam hone par buttons dikhao
+                const actionPanel = document.getElementById(`actions-${aiMsgId}`);
+                if(actionPanel) actionPanel.classList.remove('hidden');
+            });
+        }
+    } catch (error) {
+        if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+        console.error("Mission Failed:", error);
+    }
+}
+</script>
+
+<style>
+@media print {
+    /* Sirf AI Response aur Header dikhao, baki sab chhupa do */
+    #sidebar, #input-container, .operation-btns, #historyPanel {
+        display: none !important;
+    }
+    #logs {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+}
+
+
+/* --- 📄 TACTICAL PRINT ENGINE --- */
+@media print {
+    /* 1. Dashboard ki faltu cheezein chhupao */
+    #sidebar, 
+    #input-container, 
+    .operation-btns, 
+    #historyPanel,
+    [id^="actions-"] { 
+        display: none !important; 
+    }
+
+    /* 2. Main background aur text fix karo */
+    body {
+        background: white !important;
+        color: black !important;
+    }
+
+    /* 3. Log container ko full width karo */
+    #main-scroll {
+        overflow: visible !important;
+        height: auto !important;
+        position: static !important;
+    }
+
+    #logs {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* 4. Sentinel response box ko sundar banao PDF mein */
+    .flex.gap-4 {
+        border: 1px solid #eee !important;
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+        page-break-inside: avoid !important;
+        background: #fafafa !important;
+        border-radius: 10px !important;
+    }
+
+    /* 5. Neon effects ko print-friendly karo */
+    .text-white { color: #222 !important; }
+    .text-neon, .text-neon\/70 { color: #008fa3 !important; font-weight: bold !important; }
+    .border-neon\/50 { border-color: #008fa3 !important; }
+    
+    /* 6. Header add karne ke liye (Optional) */
+    #logs::before {
+        content: "SENTINEL DEFENSE - MISSION INTELLIGENCE REPORT";
+        display: block;
+        text-align: center;
+        font-family: monospace;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #008fa3;
+        padding-bottom: 10px;
+    }
+}
+
+/* --- 📋 COPY BUTTON FEEDBACK CSS --- */
+.copy-success {
+    color: #4ade80 !important;
+    border-color: #4ade80 !important;
+    background: rgba(74, 222, 128, 0.1) !important;
+}
+</style>
+
+<script>
+
+    // Checkbox aur Voice function ko connect karein
+document.addEventListener('DOMContentLoaded', () => {
+    const voiceToggle = document.getElementById('voiceToggle');
+    
+    // Page load hote hi current state save karein
+    localStorage.setItem('voiceToggle', voiceToggle.checked);
+
+    // Jab user toggle change kare
+    voiceToggle.addEventListener('change', (e) => {
+        localStorage.setItem('voiceToggle', e.target.checked);
+        
+        // Confirmation sound (Optional)
+        if (e.target.checked) {
+            playSystemVoice("Voice feedback active");
+        }
+    });
+});
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+/* Tactical Colors for UI */
+.sentinel-heading { color: #00f3ff; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px #00f3ff; }
+/* ... baaki styles wahi rahenge ... */
+
+@media print {
+    #sidebar, #input-container, .operation-btns, #historyPanel, [id^="actions-"] { display: none !important; }
+    body { background: white !important; color: black !important; }
+    #main-scroll { overflow: visible !important; height: auto !important; position: static !important; }
+    #logs { width: 100% !important; padding: 0 !important; }
+}
+.copy-success { color: #4ade80 !important; border-color: #4ade80 !important; background: rgba(74, 222, 128, 0.1) !important; }
+</style>
+
+<script>
+// --- 🛰️ GLOBAL UTILITIES & HISTORY ---
+let missionLogs = [];
+try {
+    const savedLogs = localStorage.getItem('sentinel_logs');
+    missionLogs = savedLogs ? JSON.parse(savedLogs) : [];
+} catch (e) { missionLogs = []; }
+
+window.speakText = function(text) {
+    if (localStorage.getItem('voiceToggle') !== 'true') return;
+    window.speechSynthesis.cancel(); 
+    const cleanText = text.replace(/<[^>]*>?/gm, '').replace(/\[.*?\]/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0; utterance.pitch = 0.85; 
+    window.speechSynthesis.speak(utterance);
+};
+
+function scrollToBottom() {
+    const scrollArea = document.getElementById('main-scroll');
+    if (scrollArea) scrollArea.scrollTop = scrollArea.scrollHeight;
+}
+
+function saveToHistory(command, response) {
+    const logEntry = {
+        id: Date.now().toString(),
+        time: new Date().toLocaleTimeString(),
+        cmd: command.length > 25 ? command.substring(0, 25) + "..." : command,
+        fullRes: response
+    };
+    missionLogs.unshift(logEntry);
+    if (missionLogs.length > 10) missionLogs.pop();
+    localStorage.setItem('sentinel_logs', JSON.stringify(missionLogs));
+    renderHistory();
+}
+
+function renderHistory() {
+    const list = document.getElementById('historyList');
+    if (!list) return;
+    list.innerHTML = missionLogs.map(log => `
+        <div class="group p-3 border border-white/5 rounded-lg bg-white/5 hover:border-neon/30 transition cursor-pointer relative mb-2">
+            <div onclick="loadPastMission('${log.id}')" class="pr-12">
+                <div class="text-[9px] text-neon/50 font-mono mb-1">${log.time}</div>
+                <div class="text-xs text-white/80 font-mono truncate">${log.cmd}</div>
+            </div>
+            <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <i onclick="renameHistory('${log.id}', event)" class="fa-solid fa-pen-to-square text-[10px] text-gray-500 hover:text-warning"></i>
+                <i onclick="copyMissionURL('${log.id}', event)" class="fa-solid fa-link text-[10px] text-gray-400 hover:text-neon"></i>
+            </div>
+        </div>`).join('');
+}
+
+function loadPastMission(id) {
+    const log = missionLogs.find(l => l.id == id);
+    if (!log) return;
+    const logsContainer = document.getElementById('logs');
+    document.getElementById('welcome-screen')?.classList.add('hidden');
+    logsContainer.classList.remove('hidden');
+    logsContainer.innerHTML = `<div class="mb-6 p-6 rounded-2xl bg-neon/5 border border-neon/20 text-left w-full shadow-lg">
+        <p class="text-neon font-mono text-[10px] tracking-widest uppercase mb-4">>> RECALLED MISSION DATA [${log.time}]</p>
+        <div class="text-white/90 font-mono text-sm leading-relaxed">${formatText(log.fullRes)}</div>
+    </div>`;
+    scrollToBottom();
+
+
+
+
+
+
+
+// Inside your runScan function in om.js
+let ai_text = data.ai_response;
+
+// Check if the user's command contains protection keywords
+const needsProtection = cmd.toLowerCase().match(/(protect|secure|mission|shield|audit|protection)/);
+
+if (!needsProtection) {
+    // This removes the button tags if the AI accidentally sent them
+    ai_text = ai_text.replace(/\[TRIGGER_MISSION_SELECT\]/g, "")
+                     .replace(/\[GENERATE_WEB_KEY\]/g, "")
+                     .replace(/\[GENERATE_APP_KEY\]/g, "");
+}
+
+// Now pass the filtered text to the typewriter
+typeWriter(ai_text, targetElement);
+
+
+
+
+
+
+
+
+
+
+}
+
+// // --- 📝 FORMATTING & TYPEWRITER ---
+// function formatText(text) {
+//     if(!text) return "";
+//     return text
+//         .replace(/\[\[STRAT_INTEL\]\][\s\S]*?\[\[STRAT_INTEL\]\]/g, (match) => `<div class="sentinel-heading mb-4 mt-6">🛰️ STRATEGIC INTELLIGENCE: ${match.replace(/\[\[STRAT_INTEL\]\]/g, '').trim()}</div>`)
+//         .replace(/\[\[CRIT_BREACH\]\][\s\S]*?\[\[CRIT_BREACH\]\]/g, (match) => `<div class="text-[#ff0f4b] font-bold animate-pulse my-4 bg-red-500/10 p-3 border-l-4 border-red-500">🚨 CRITICAL BREACH: ${match.replace(/\[\[CRIT_BREACH\]\]/g, '').trim()}</div>`)
+//         .replace(/\n/g, '<br>');
+// }
+
+function typeWriter(text, element, speed = 15, callback) {
+    if (!element) return;
+    let formatted = formatText(text);
+    element.innerHTML = "";
+    let i = 0, isTag = false, currentHTML = "";
+    function type() {
+        if (i < formatted.length) {
+            let char = formatted.charAt(i);
+            if (char === "<") isTag = true;
+            if (char === ">") { isTag = false; currentHTML += char; i++; element.innerHTML = currentHTML; type(); return; }
+            currentHTML += char; element.innerHTML = currentHTML; i++;
+            if (isTag) type(); else { scrollToBottom(); setTimeout(type, speed); }
+        } else if (callback) { callback(); }
+    }
+    type();
+}
+
+// --- ⚡ CORE SCAN ENGINE (SINGLE VERSION) ---
+async function runScan() {
+
+
+
+
+
+
+    const inputElement = document.getElementById('userInput');
+    const logsContainer = document.getElementById('logs');
+    if(!inputElement || !logsContainer) return;
+    const message = inputElement.value.trim();
+    if (!message) return;
+
+    document.getElementById('welcome-screen')?.classList.add('hidden');
+    logsContainer.classList.remove('hidden');
+    logsContainer.classList.add('flex');
+
+    logsContainer.innerHTML += `<div class="flex justify-end gap-3 fade-in-up w-full mb-6">
+        <div class="bg-white/10 border border-white/10 text-white px-5 py-2 rounded-2xl font-mono text-sm shadow-lg">> ${message}</div>
+    </div>`;
+
+    inputElement.value = '';
+    scrollToBottom();
+
+    const loadingId = 'load-' + Date.now();
+    const thinkingLines = ["🛰️ CONNECTING SATELLITE", "⚡ DECRYPTING PACKETS", "🛡️ HARDENING GRID", "🧠 SYNCING AI"];
+    let lineIdx = 0;
+
+    // --- 🔮 2050 FUTURISTIC ORB INJECTION ---
+    logsContainer.innerHTML += `
+    <div id="${loadingId}" class="flex items-center gap-6 fade-in-up ml-2 my-10 w-full">
+        <div class="neural-orb">
+            <div class="orb-ring"></div>
+            <div class="orb-ring-inner"></div>
+            <div class="absolute inset-0 flex items-center justify-center">
+                <i class="fa-solid fa-brain text-[10px] text-neon animate-pulse"></i>
+            </div>
+        </div>
+        <div class="flex flex-col gap-2">
+            <div class="text-neon text-[10px] font-mono tracking-[0.3em] uppercase">
+                <span id="thinking-text">${thinkingLines[0]}</span>
+            </div>
+            <div class="h-[2px] w-48 bg-white/10 overflow-hidden relative">
+                <div class="h-full bg-neon animate-loading-bar shadow-[0_0_10px_#00f3ff]" style="width: 40%"></div>
+            </div>
+        </div>
+    </div>`;
+    
+    const thinkingInterval = setInterval(() => {
+        const textEl = document.getElementById('thinking-text');
+        if (textEl) { lineIdx++; textEl.innerText = thinkingLines[lineIdx % thinkingLines.length]; }
+    }, 1000);
+
+
+
+
+// ... Orb loader inject hone ke baad ...
+    
+
+
+    try {
+        playLoadingSequence();
+        const response = await fetch('http://127.0.0.1:5002/scan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ command: message }) });
+        const data = await response.json();
+        const aiResponse = data.ai_response || data.response;
+
+        clearInterval(thinkingInterval);
+        document.getElementById(loadingId)?.remove();
+
+        if (aiResponse) {
+            saveToHistory(message, aiResponse);
+            const aiMsgId = 'ai-' + Date.now();
+            const safeText = aiResponse.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+            logsContainer.innerHTML += `
+                <div class="flex gap-4 fade-in-up w-full max-w-4xl mb-8 text-left">
+                    <div class="w-10 h-10 rounded-xl bg-deep border border-neon/30 flex items-center justify-center text-neon flex-shrink-0"><i class="fa-solid fa-robot text-lg"></i></div>
+                    <div class="flex flex-col w-full">
+                        <div class="flex items-center gap-3 text-neon/70 text-xs font-mono uppercase mb-1">🛡️ SENTINEL RESPONSE</div>
+                        <div class="pl-6 border-l-2 border-neon/50 relative">
+                            <div id="${aiMsgId}" class="text-white font-mono text-sm leading-relaxed mb-4"></div>
+                            <div id="actions-${aiMsgId}" class="hidden flex items-center gap-4 border-t border-white/5 pt-3 mt-2">
+                                <button onclick="speakText('${safeText}')" class="text-[10px] text-gray-400 hover:text-neon transition flex items-center gap-1"><i class="fa-solid fa-volume-high"></i> LISTEN</button>
+                                <button onclick="navigator.clipboard.writeText('${safeText}'); alert('Copied!');" class="text-[10px] text-gray-400 hover:text-green-400 transition flex items-center gap-1"><i class="fa-solid fa-copy"></i> COPY</button>
+                                <button onclick="window.print()" class="text-[10px] text-gray-400 hover:text-red-400 transition flex items-center gap-1"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            
+            speakText(aiResponse);
+            typeWriter(aiResponse, document.getElementById(aiMsgId), 15, () => {
+                const actionPanel = document.getElementById(`actions-${aiMsgId}`);
+                if(actionPanel) { actionPanel.classList.remove('hidden'); actionPanel.classList.add('flex'); }
+            });
+        }
+    } catch (error) { console.error("Mission Failed:", error); }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderHistory();
+    const voiceToggle = document.getElementById('voiceToggle');
+    if(voiceToggle) voiceToggle.addEventListener('change', (e) => localStorage.setItem('voiceToggle', e.target.checked));
+    document.getElementById('userInput')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') runScan(); });
+});
+</script>
+
+
+<script>
+    // --- 🛰️ TACTICAL LOADING SEQUENCE ---
+function playLoadingSequence() {
+    // 1. Voice Command
+    const speakThinking = new SpeechSynthesisUtterance("Sentinel is thinking");
+    speakThinking.rate = 0.85; // Thoda slow aur robotic
+    speakThinking.pitch = 0.4; // Deep Male Tone
+    window.speechSynthesis.speak(speakThinking);
+
+    // 2. Futuristic Humming Sound (Web Audio API)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    oscillator.type = 'sawtooth'; // Futuristic robotic sound
+    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime); 
+    oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 2);
+    
+    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2);
+
+    oscillator.start();
+    oscillator.stop(audioCtx.currentTime + 2); // 2 seconds processing sound
+}
+
+
+
+
+// --- 🛰️ EXTRA TACTICAL OVERRIDE (For Speaker & Copy) ---
+
+document.addEventListener('click', function(e) {
+    // 1. GLOBAL COPY OVERRIDE
+    if (e.target.closest('button') && e.target.innerText.includes('COPY')) {
+        const btn = e.target.closest('button');
+        const textToCopy = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> COPIED!';
+            btn.classList.add('copy-success');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('copy-success');
+            }, 2000);
+        });
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    // 2. GLOBAL SPEAKER OVERRIDE
+    if (e.target.closest('button') && e.target.innerText.includes('LISTEN')) {
+        const btn = e.target.closest('button');
+        const textToSpeak = btn.getAttribute('onclick').match(/'([^']+)'/)[1];
+        speakText(textToSpeak); // Aapka mardana robotic voice trigger hoga
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+</script>
+
+
+
+
+
+<style>
+    /* 🛰️ Intelligence Card Styling */
+.intel-card {
+    background: rgba(10, 10, 15, 0.8);
+    border: 1px solid rgba(250, 204, 21, 0.2);
+    border-left: 4px solid #facc15;
+    /* padding: 20px;
+    margin: 15px 0; */
+
+
+    padding: 12px 16px !important; 
+    margin: 8px 0 !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+/* 🏷️ Tag Specific Colors & Glows */
+.strat-intel-box { 
+    color: #00f3ff; /* Cyan */
+    font-weight: 800; 
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5); 
+    border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+}
+
+.crit-breach-box { 
+    color: #ff0000; /* Red */
+    background: rgba(255, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    animation: pulse-red 2s infinite;
+}
+
+.data-packet-box { 
+    font-family: 'JetBrains Mono', monospace;
+    color: #facc15; /* Gold */
+    background: rgba(0, 0, 0, 0.4);
+    padding: 12px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+.sec-stable-box { 
+    color: #10b981; /* Green */
+    font-weight: bold;
+    border-top: 1px solid rgba(16, 185, 129, 0.2);
+    margin-top: 10px;
+    padding-top: 5px;
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0px rgba(255, 0, 0, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
+    100% { box-shadow: 0 0 0px rgba(255, 0, 0, 0.2); }
+}
+
+
+
+
+
+
+
+
+/* 🎇 Glowing Scan Line Effect */
+.intel-card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, #facc15, transparent);
+    animation: scan-vertical 3s linear infinite;
+    opacity: 0.5;
+}
+
+@keyframes scan-vertical {
+    0% { top: 0%; }
+    100% { top: 100%; }
+}
+
+/* 🧊 Professional Glass Look */
+.intel-card {
+    background: rgba(15, 23, 42, 0.9) !important; /* Deep Navy Glass */
+    border: 1px solid rgba(0, 243, 255, 0.15) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+
+
+
+
+
+
+
+
+/* 🧊 Professional War Room Glass Effect */
+.intel-card {
+    background: rgba(13, 17, 23, 0.95); /* Ultra Deep Navy */
+    border: 1px solid rgba(0, 243, 255, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(0, 243, 255, 0.05);
+}
+
+/* 🎇 Scanning Animation */
+@keyframes scan-horizontal {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+.animate-scan-horizontal {
+    animation: scan-horizontal 3s linear infinite;
+}
+
+
+
+/* 🖋️ Professional Bold Highlight */
+strong, b {
+    color: #00f3ff; /* Neon Cyan highlight */
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(0, 243, 255, 0.4); /* Halka sa glow */
+    background: rgba(0, 243, 255, 0.1); /* Text ke piche ek halki patti */
+    padding: 0 4px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace; /* Professional tech feel */
+}
+
+
+
+
+
+</style>
+<script>
+    
+
+
+
+function formatText(text) {
+    if(!text) return "";
+    
+    // 🎨 Dynamic Badges for Elite Look
+    const badges = `
+    <div class="flex gap-2 mb-3">
+        <span class="text-[8px] px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded animate-pulse">L5_CLEARANCE</span>
+        <span class="text-[8px] px-2 py-0.5 bg-amber-500/20 text-amber-400 border border-amber-500/40 rounded">SDG_16_INSTITUTION</span>
+        <span class="text-[8px] px-2 py-0.5 bg-purple-500/20 text-purple-400 border border-purple-500/40 rounded">SENTINEL_V3_CORE</span>
+    </div>`;
+
+    let html = text
+
+    // 1. Pehle Markdown BOLD ko HTML STRONG mein badlo
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+        
+        // 2. Phir baaki ke tags (STRAT_INTEL, etc.) process karo
+        .replace(/\[\[STRAT_INTEL\]\]([\s\S]*?)\[\[STRAT_INTEL\]\]/g, 
+            '<div class="strat-intel-box">🛰️ $1</div>')
+        // ... (baaki purana logic)
+
+
+        // 1. STRATEGIC INTELLIGENCE (Cyan Header)
+        .replace(/\[\[STRAT_INTEL\]\]([\s\S]*?)\[\[STRAT_INTEL\]\]/g, 
+            '<div class="mb-4 text-[#00f3ff] font-black tracking-[0.2em] uppercase border-b border-cyan-500/30 pb-2 flex items-center gap-2"><i class="fa-solid fa-satellite"></i> $1</div>')
+            
+        // 2. CRITICAL BREACH (Red Alert Box)
+        .replace(/\[\[CRIT_BREACH\]\]([\s\S]*?)\[\[CRIT_BREACH\]\]/g, 
+            '<div class="my-4 bg-red-950/40 border-2 border-red-600/50 p-4 rounded-lg animate-pulse text-red-400"><div class="flex items-center gap-2 font-bold mb-1"><i class="fa-solid fa-triangle-exclamation"></i> CRITICAL_BREACH</div><div class="text-xs italic">$1</div></div>')
+            
+        // 3. DATA PACKET (Gold Technical Box)
+        .replace(/\[\[DATA_PACKET\]\]([\s\S]*?)\[\[DATA_PACKET\]\]/g, 
+            '<div class="my-4 bg-black/60 border-l-4 border-amber-500 p-4 font-mono text-[11px] text-amber-400 shadow-inner overflow-x-auto"><div class="text-[9px] text-amber-500/50 mb-2">// TECHNICAL_DATA_PAYLOAD_DECODED</div>$1</div>')
+            
+        // 4. SECURITY STABLE (Green Success)
+        .replace(/\[\[SEC_STABLE\]\]([\s\S]*?)\[\[SEC_STABLE\]\]/g, 
+            '<div class="mt-4 text-[#10b981] font-bold flex items-center gap-2 bg-emerald-500/10 p-2 rounded border border-emerald-500/20"><i class="fa-solid fa-shield-check"></i> STATUS: $1</div>')
+            
+
+
+
+        
+        .replace(/\[\[ACTION_TAKEN\]\]([\s\S]*?)\[\[ACTION_TAKEN\]\]/g, 
+         '    <div class="my-2 bg-blue-600/20 border-l-4 border-blue-400 p-3 text-blue-300 font-bold italic animate-pulse"><i class="fa-solid fa-bolt-auto"></i> AUTONOMOUS_ACTION: $1</div>')
+    
+
+
+
+
+
+        // ⚡ Trigger Buttons for Key Generation
+        .replace('[GENERATE_WEB_KEY]', `
+            <div class="mt-4 p-3 bg-cyan-950/40 border border-cyan-500 rounded text-center">
+            <p class="text-[10px] text-cyan-300 mb-2 italic">PURPOSE_VALIDATED: WEBSITE_INTEGRITY_SHIELD</p>
+            <button onclick="generateFinalKey('web')" class="px-4 py-2 bg-cyan-500 text-black font-bold text-xs rounded animate-pulse">
+                🔓 GENERATE ACCESS KEY (#w)
+            </button>
+            </div>
+        `)
+
+        .replace('[GENERATE_APP_KEY]', `
+        <div class="mt-4 p-3 bg-amber-950/40 border border-amber-500 rounded text-center">
+            <p class="text-[10px] text-amber-300 mb-2 italic">PURPOSE_VALIDATED: APP_COMMAND_CONTROL</p>
+            <button onclick="generateFinalKey('app')" class="px-4 py-2 bg-amber-500 text-black font-bold text-xs rounded animate-pulse">
+                🔓 GENERATE ACCESS KEY (#a)
+            </button>
+        </div>
+    `)
+    
+
+
+
+    .replace('[TRIGGER_MISSION_SELECT]', `
+    <div class="mt-4 p-4 bg-slate-900/90 border border-cyan-500/50 rounded-lg shadow-2xl">
+        <p class="text-[10px] text-cyan-400 mb-3 font-mono text-center tracking-widest italic">
+            // SELECT MISSION OPERATIONAL PATH
+        </p>
+        <div class="grid grid-cols-1 gap-2">
+            <button onclick="openPurposeForm('web')" class="py-2 bg-cyan-600/20 border border-cyan-500 text-cyan-400 text-[10px] font-bold hover:bg-cyan-500 hover:text-black transition-all">
+                1. 🌐 ACTIVATE_WEB_SHIELD(#w) 
+            </button>
+            <button onclick="openPurposeForm('app')" class="py-2 bg-amber-600/20 border border-amber-500 text-amber-400 text-[10px] font-bold hover:bg-amber-500 hover:text-black transition-all">
+                2. 📱 LAUNCH_APP_CONTROL(#a)
+            </button>
+            <button onclick="openPurposeForm('infra')" class="py-2 bg-purple-600/20 border border-purple-500 text-purple-400 text-[10px] font-bold hover:bg-purple-500 hover:text-black transition-all">
+                3. 🛰️ SECURE_INFRA_CORE(#i)
+            </button>
+        </div>
+    </div>
+`)
+    
+
+        .replace(/\n/g, '<br>');
+
+
+
+    // 🎇 Final Intel Card with Glassmorphism
+    return `
+    <div class="intel-card relative p-6 mb-8 transition-all hover:scale-[1.01] overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent animate-scan-horizontal"></div>
+        ${badges}
+        <div class="text-white/90 leading-relaxed font-light">${html}</div>
+    </div>`;
+}
+
+
+
+
+
+let currentType = "";
+
+function openPurposeForm(type) {
+    currentType = type;
+    document.getElementById('purpose-modal').classList.remove('hidden');
+    document.getElementById('modal-title').innerText = type.toUpperCase() + "_ACCESS_REQUEST";
+    document.getElementById('key-display').classList.add('hidden');
+    document.getElementById('purpose-input').value = "";
+}
+
+function verifyPurpose() {
+    const purpose = document.getElementById('purpose-input').value;
+    
+    if (purpose.length < 10) {
+        alert("🚨 INSUFFICIENT DATA: Provide a detailed purpose for Institutional Security.");
+        return;
+    }
+
+    // Purpose Satisfied -> Key Generation with Secret Suffix
+    let randomID = Math.random().toString(36).substr(2, 6).toUpperCase();
+    let suffix = (currentType === 'web') ? '#w' : (currentType === 'app' ? '#a' : '#i');
+    let secretKey = `SENT-${randomID}-X${suffix}`;
+
+    // Show Key and Change Button
+    const keyBox = document.getElementById('key-display');
+    keyBox.innerText = secretKey;
+    keyBox.classList.remove('hidden');
+    
+    document.getElementById('verify-btn').innerHTML = "✅ COPY KEY";
+    document.getElementById('verify-btn').onclick = () => {
+        navigator.clipboard.writeText(secretKey);
+        alert("Key Copied! The room is waiting. Use Taskbar to enter.");
+        closeModal();
+    };
+}
+
+function closeModal() {
+    document.getElementById('purpose-modal').classList.add('hidden');
+}
+
+
+
+
+
+
+
+function generateFinalKey(type) {
+    let randomID = Math.random().toString(36).substr(2, 6).toUpperCase();
+    let suffix = (type === 'web') ? '#w' : (type === 'app' ? '#a' : '#i');
+    
+    // K
+    activeGeneratedKey = `SENT-${randomID}-X${suffix}`; 
+
+    const keyBox = document.getElementById('key-display');
+    keyBox.innerText = activeGeneratedKey;
+    keyBox.classList.remove('hidden');
+    // ... baaki copy logic ...
+}
+
+
+
+
+/////////////////////////////////////////////////////
+///////////trigger access room  //
+
+
+// function triggerAccessRoom() {
+
+
+
+function triggerAccessRoom() {
+
+     let activeGeneratedKey = ""; // 
+    const userKey = prompt("🔐 SECURITY_CHECK: ENTER ACCESS KEY TO UNLOCK ACTION_ROOM");
+
+    if (!userKey) return; 
+
+    // 🛡️ STRICT MATCHING:
+    if (userKey === activeGeneratedKey) {
+        
+        // CASE 1: WEBSITE (#w)
+        if (userKey.endsWith('#w')) {
+            alert("🌐 WEB_SHIELD_ACCESS: GRANTED.");
+            openLiveRoom('Web-Shield', '#00f3ff'); // Cyan Theme
+        } 
+        // CASE 2: APP (#a)
+        else if (userKey.endsWith('#a')) {
+            alert("📱 APP_CONTROL_ACCESS: GRANTED.");
+            openLiveRoom('App-Control', '#facc15'); // Amber Theme
+        }
+        // CASE 3: INFRASTRUCTURE (#i) - THE BOSS ROOM!
+        else if (userKey.endsWith('#i')) {
+            alert("🛰️ INFRA_CORE_ACCESS: GRANTED. Hardening Backend Nodes...");
+            openLiveRoom('Infra-Core', '#a855f7'); // Purple/Violet Theme
+        }
+    } 
+    else {
+       
+        alert("🚨 ACCESS_DENIED: Invalid Key Signature. Authentication Failed!");
+    }
+}
+
+
+let logInterval;
+
+function openLiveRoom(type, themeColor) {
+    // 1. Switch UI
+    document.getElementById('live-action-room').classList.remove('hidden');
+    document.getElementById('room-status-title').innerText = `${type}_MONITORING_ACTIVE`;
+    document.getElementById('room-status-title').style.color = themeColor;
+
+    // 2. Start Live 24-Hour Logs (Simulation)
+    startLiveLogs(type);
+}
+
+function startLiveLogs(type) {
+    const feed = document.getElementById('action-feed');
+    let count = 0;
+
+    logInterval = setInterval(() => {
+        const timestamp = new Date().toLocaleTimeString();
+        const logs = [
+            `[${timestamp}] SCANNING_PORTS... [CLEAN]`,
+            `[${timestamp}] MONITORING_ENCRYPTION_HANDSHAKE...`,
+            `[${timestamp}] ${type} NEUTRALIZATION_PROTOCOL_ACTIVE`,
+            `[${timestamp}] ALERT: SUSPICIOUS_IP_DETECTED... BLOCKING_INITIATED.`
+        ];
+        
+        const logEntry = logs[Math.floor(Math.random() * logs.length)];
+        feed.innerHTML += `<p class="text-[10px] text-cyan-200/70 font-mono">> ${logEntry}</p>`;
+        feed.scrollTop = feed.scrollHeight;
+        
+        // Randomly increase threat neutralized count
+        if(Math.random() > 0.8) {
+            count++;
+            document.getElementById('threat-count').innerText = count;
+        }
+    }, 2000); // 2 Seconds per log entry
+}
+
+function exitLiveRoom() {
+    clearInterval(logInterval);
+    document.getElementById('live-action-room').classList.add('hidden');
+    alert("🔒 SESSION_TERMINATED: All temporary project logs wiped for security.");
+}
+
+
+</script>
+
+
+
+
+<div id="purpose-modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[1000]">
+    <div class="bg-slate-900 border border-cyan-500/50 p-6 rounded-xl w-80 shadow-[0_0_30px_rgba(0,243,255,0.2)] text-center">
+        <h4 id="modal-title" class="text-cyan-400 font-bold mb-4 tracking-widest text-sm uppercase"></h4>
+        
+        <p class="text-[9px] text-slate-400 mb-4 italic">Specify Operational Purpose for Institutional Integrity (SDG 16):</p>
+        
+        <textarea id="purpose-input" class="w-full bg-black border border-slate-700 p-2 text-cyan-300 text-[10px] focus:border-cyan-500 outline-none rounded" rows="3" placeholder="e.g., Identifying SQLi vulnerabilities in the public portal..."></textarea>
+        
+        <div id="key-display" class="hidden mt-4 p-2 bg-cyan-500/10 border border-dashed border-cyan-500 text-cyan-400 font-mono text-[12px] animate-pulse"></div>
+        
+        <div class="flex gap-2 mt-4">
+            <button onclick="closeModal()" class="flex-1 py-1 text-slate-500 text-[10px] border border-slate-700 rounded hover:bg-slate-800">CANCEL</button>
+            <button id="verify-btn" onclick="verifyPurpose()" class="flex-1 py-1 bg-cyan-600 text-black font-bold text-[10px] rounded hover:bg-cyan-400">VERIFY & GENERATE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+function verifyPurpose() {
+    // ... existing purpose validation logic ...
+
+    // Jab Sentinel Satisfy ho jaye:
+    const secretKey = `SENT-${randomID}-X${suffix}`;
+    
+    // 🚀 REDIRECT TO LIVE.HTML WITH DATA
+    // Hum URL params use karenge taaki live.html ko pata chale ki kaunsi key hai
+    setTimeout(() => {
+        window.location.href = `live.html?key=${encodeURIComponent(secretKey)}&type=${currentType}`;
+    }, 2000); // 2 second ka delay taaki user key dekh le
+}
+
+
+
+
+
+
+
+</script>
+<!-- 
+
+<div id="live-action-room" class="hidden fixed inset-0 bg-slate-950 z-[2000] flex flex-col font-mono">
+    <div class="p-4 border-b border-cyan-500/30 flex justify-between items-center bg-black/40">
+        <div class="flex items-center gap-3">
+            <div class="w-3 h-3 bg-cyan-500 rounded-full animate-pulse shadow-[0_0_10px_#00f3ff]"></div>
+            <h2 id="room-status-title" class="text-cyan-400 text-sm tracking-widest font-bold uppercase"></h2>
+        </div>
+        <button onclick="exitLiveRoom()" class="px-3 py-1 border border-red-500/50 text-red-500 text-[10px] hover:bg-red-500 hover:text-white transition-all">
+            EXIT_SESSION [ESC]
+        </button>
+    </div>
+
+    <div class="flex-1 flex overflow-hidden">
+        <div class="w-2/3 border-r border-slate-800 p-4 overflow-y-auto bg-black/20" id="live-logs-container">
+            <p class="text-[9px] text-slate-500 mb-4">// INITIALIZING SECURE_TUNNEL_v2.0...</p>
+            <div id="action-feed" class="space-y-2"></div>
+        </div>
+
+        <div class="w-1/3 p-4 bg-slate-900/30">
+            <h4 class="text-[10px] text-slate-400 mb-4 border-b border-slate-700 pb-2">PROJECT_INTEGRITY_INDEX</h4>
+            <div class="space-y-4">
+                <div class="bg-black/40 p-3 border border-slate-800">
+                    <p class="text-[9px] text-slate-500">THREATS_NEUTRALIZED</p>
+                    <p id="threat-count" class="text-xl text-cyan-400 font-bold">0</p>
+                </div>
+                <div class="bg-black/40 p-3 border border-slate-800">
+                    <p class="text-[9px] text-slate-500">SYSTEM_UPTIME</p>
+                    <p class="text-xs text-emerald-400 font-bold">99.99% SECURE</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+
+
